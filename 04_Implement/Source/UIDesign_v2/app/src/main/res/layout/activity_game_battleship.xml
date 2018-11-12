@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_game2"
+    android:orientation="horizontal"
+    android:visibility="visible"
+    tools:context=".Activities.FindingRoom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2">
+
+            <Button
+                android:id="@+id/btn_chat"
+                android:layout_width="130dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/btn_chat"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_p1Name"
+                android:layout_width="84dp"
+                android:layout_height="23dp"
+                android:layout_marginEnd="104dp"
+                android:layout_marginTop="65dp"
+                android:background="@drawable/playername1"
+                android:text="Player1"
+                android:textAlignment="center"
+                android:textColor="#ffffff"
+                android:textSize="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="230dp"
+                android:layout_height="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/location1"
+                app:layout_constraintBottom_toTopOf="@+id/iv_p1map"
+                app:layout_constraintStart_toStartOf="@+id/iv_p1map" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="10dp"
+                android:layout_height="230dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/location2"
+                app:layout_constraintEnd_toStartOf="@+id/iv_p1map"
+                app:layout_constraintTop_toTopOf="@+id/iv_p1map" />
+
+            <ImageView
+                android:id="@+id/iv_p1map"
+                android:layout_width="250dp"
+                android:layout_height="252dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="116dp"
+                android:background="@drawable/background_game2_map"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TableLayout
+                android:id="@+id/tableLayout"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/iv_p1map"
+                app:layout_constraintTop_toTopOf="@+id/iv_p1map">
+
+            </TableLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4">
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="136dp"
+                android:background="@drawable/btn_rocket"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_boom"
+                app:layout_constraintStart_toStartOf="@+id/button2"
+                app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+            <Button
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_radar"
+                app:layout_constraintStart_toStartOf="@+id/button3"
+                app:layout_constraintTop_toBottomOf="@+id/button3" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2">
+
+            <Button
+                android:id="@+id/btn_pause"
+                android:layout_width="70dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="76dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/btn_pause"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_sound"
+                android:layout_width="70dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/btn_sound"
+                app:layout_constraintStart_toEndOf="@+id/btn_pause"
+                app:layout_constraintTop_toTopOf="@+id/btn_pause" />
+
+            <TextView
+                android:id="@+id/txt_p2Name"
+                android:layout_width="85dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="105dp"
+                android:layout_marginTop="65dp"
+                android:background="@drawable/playername2"
+                android:text="Player2"
+                android:textAlignment="center"
+                android:textColor="#ffffff"
+                android:textSize="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:layout_width="230dp"
+                android:layout_height="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/location1"
+                app:layout_constraintBottom_toTopOf="@+id/iv_p2map"
+                app:layout_constraintStart_toStartOf="@+id/iv_p2map" />
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="230dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/location2"
+                app:layout_constraintEnd_toStartOf="@+id/iv_p2map"
+                app:layout_constraintTop_toTopOf="@+id/iv_p2map" />
+
+            <ImageView
+                android:id="@+id/iv_p2map"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="120dp"
+                android:background="@drawable/background_game2_map"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TableLayout
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/iv_p2map"
+                app:layout_constraintTop_toTopOf="@+id/iv_p2map">
+
+            </TableLayout>
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
