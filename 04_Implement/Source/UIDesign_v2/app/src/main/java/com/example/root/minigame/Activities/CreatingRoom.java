@@ -31,9 +31,9 @@ import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 public class CreatingRoom extends AppCompatActivity {
 
-    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3 , btn_setting;
+    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_setting;
     ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
-    FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1,fl_btn_game2,fl_btn_game3;
+    FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3;
     TextView txt_p1Name, txt_p2Name;
 
     private BluetoothAdapter mBTAdapter;
@@ -93,29 +93,29 @@ public class CreatingRoom extends AppCompatActivity {
         fl_p2Name.setVisibility(View.INVISIBLE);
 
 
-        btn_setting.setOnClickListener(new View.OnClickListener()
-        {
+        btn_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
 
-        if (Main.thisPlayer.isHost())
-        {
-            mBTAdapter.setName(Main.thisPlayer.getPlayerName()+ "&" + "N/A");
+        if (Main.thisPlayer.isHost()) {
+            mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
             txt_p1Name.setText(Main.thisPlayer.getPlayerName());
             btn_game1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (iv_game1Tick.getVisibility() == View.VISIBLE) {
                         iv_game1Tick.setVisibility(View.INVISIBLE);
-                        mBTAdapter.setName(Main.thisPlayer.getPlayerName()+ "&" + "N/A");
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
+                        StartingMenu.mConnection.sendMessage("untick1");
                     } else {
                         iv_game1Tick.setVisibility(View.VISIBLE);
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Caro");
+                        StartingMenu.mConnection.sendMessage("tick1");
                     }
                 }
             });
@@ -125,12 +125,14 @@ public class CreatingRoom extends AppCompatActivity {
                 public void onClick(View v) {
                     if (iv_game2Tick.getVisibility() == View.VISIBLE) {
                         iv_game2Tick.setVisibility(View.INVISIBLE);
-                        mBTAdapter.setName(Main.thisPlayer.getPlayerName()+ "&" + "N/A");
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
+                        StartingMenu.mConnection.sendMessage("untick2");
                     } else {
                         iv_game2Tick.setVisibility(View.VISIBLE);
                         iv_game1Tick.setVisibility(View.INVISIBLE);
                         iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Tàu chiến");
+                        StartingMenu.mConnection.sendMessage("tick2");
                     }
                 }
             });
@@ -141,18 +143,18 @@ public class CreatingRoom extends AppCompatActivity {
                     if (iv_game3Tick.getVisibility() == View.VISIBLE) {
                         iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName());
-                        mBTAdapter.setName(Main.thisPlayer.getPlayerName()+ "&" + "N/A");
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
+                        StartingMenu.mConnection.sendMessage("untick3");
                     } else {
                         iv_game3Tick.setVisibility(View.VISIBLE);
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         iv_game1Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Sudoku");
+                        StartingMenu.mConnection.sendMessage("tick3");
                     }
                 }
             });
-        }
-        else
-        {
+        } else {
             fl_p2Name.setVisibility(View.VISIBLE);
             txt_p2Name.setText(Main.thisPlayer.getPlayerName());
         }
@@ -165,9 +167,7 @@ public class CreatingRoom extends AppCompatActivity {
                     if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
                         Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
                     else iv_p1Ready.setVisibility(View.VISIBLE);
-                }
-                else
-                {
+                } else {
                     iv_p2Ready.setVisibility(View.VISIBLE);
                 }
                 StartingMenu.mConnection.sendMessage("Ready");
@@ -184,8 +184,7 @@ public class CreatingRoom extends AppCompatActivity {
         });
     }
 
-    private void StartingGame(boolean check)
-    {
+    private void StartingGame(boolean check) {
         if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE
                 && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE || iv_game3Tick.getVisibility() == View.VISIBLE)) {
             iv_p1Ready.setVisibility(View.VISIBLE);
@@ -198,8 +197,7 @@ public class CreatingRoom extends AppCompatActivity {
             fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
             Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             if (check == true) {
                 btn_game1.setEnabled(false);
                 btn_game2.setEnabled(false);
@@ -248,9 +246,7 @@ public class CreatingRoom extends AppCompatActivity {
             permistioncheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
             if (permistioncheck != 0) {
                 this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
-            }
-            else
-                {
+            } else {
 
             }
         }
@@ -296,10 +292,9 @@ public class CreatingRoom extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
-                    if(msg.arg1 != BluetoothConnectionService.STATE_CONNECTED){
+                    if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
                         Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
-                    }else
-                    {
+                    } else {
                         fl_p2Name.setVisibility(View.VISIBLE);
                     }
                     break;
@@ -312,30 +307,53 @@ public class CreatingRoom extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    if(readMessage.equals("Ready")){
-                        if(Main.thisPlayer.isHost()){
+                    if (readMessage.equals("Ready")) {
+                        if (Main.thisPlayer.isHost()) {
                             iv_p2Ready.setVisibility(View.VISIBLE);
-                        }
-                        else{
+                        } else {
                             iv_p1Ready.setVisibility(View.VISIBLE);
                         }
                         StartingGame(false);
                     }
+                    if (!Main.thisPlayer.isHost()) {
+                        switch (readMessage) {
+                            case "tick1":
+                                iv_game1Tick.setVisibility(View.VISIBLE);
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "untick1":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "tick2":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                iv_game2Tick.setVisibility(View.VISIBLE);
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "untick2":
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "tick3":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                iv_game3Tick.setVisibility(View.VISIBLE);
+                                break;
+                            case "untick3":
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                break;
+
+                        }
+                    }
                     break;
-                    case Messages.MESSAGE_DEVICE_NAME:
-                        String mConnectedDeviceName = null;
-                        mConnectedDeviceName = msg.getData().getString(Messages.DEVICE_NAME);
-                        Toast.makeText(CreatingRoom.this ,mConnectedDeviceName,Toast.LENGTH_LONG).show();
-                        if (Main.thisPlayer.isHost())
-                        {
-                            StartingMenu.enemyPlayer = new Player(mConnectedDeviceName);
-                            fl_p2Name.setVisibility(View.VISIBLE);
-                            txt_p2Name.setText(StartingMenu.enemyPlayer.getPlayerName());
-                        }
-                        else
-                        {
-                            txt_p1Name.setText(StartingMenu.enemyPlayer.getPlayerName());
-                        }
+                case Messages.MESSAGE_DEVICE_NAME:
+                    String mConnectedDeviceName = null;
+                    mConnectedDeviceName = msg.getData().getString(Messages.DEVICE_NAME);
+                    Toast.makeText(CreatingRoom.this, mConnectedDeviceName, Toast.LENGTH_LONG).show();
+                    if (Main.thisPlayer.isHost()) {
+                        StartingMenu.enemyPlayer = new Player(mConnectedDeviceName);
+                        fl_p2Name.setVisibility(View.VISIBLE);
+                        txt_p2Name.setText(StartingMenu.enemyPlayer.getPlayerName());
+                    }
                     break;
 
                 case Messages.MESSAGE_TOAST:
