@@ -3,6 +3,7 @@ package com.example.root.minigame;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -32,13 +33,14 @@ public class Main extends AppCompatActivity {
         dialog_setName.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_setName.setContentView(R.layout.dialog_set_nickname);
         dialog_setName.show();
-
+        final MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(),R.raw.pingping);
         Button btn_confirm = (Button) dialog_setName.findViewById(R.id.btn_confirm);
         final EditText edt_playerName = (EditText) dialog_setName.findViewById(R.id.edt_playerName);
 
         btn_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mediaPlayer.start();
                 String playerName = edt_playerName.getText().toString();
                 if (!playerName.equals(""))
                 {
@@ -69,6 +71,7 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
+                mediaPlayer.start();
                 if (thisPlayer.getPlayerName().equals(""))
                 {
                     Toast.makeText(Main.this, "Vui lòng đặt tên nhân vật!", Toast.LENGTH_SHORT).show();
@@ -89,7 +92,7 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-
+                mediaPlayer.start();
             }
         });
 
@@ -98,7 +101,8 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-               finishAndRemoveTask();
+                mediaPlayer.start();
+                finishAndRemoveTask();
             }
         });
 
