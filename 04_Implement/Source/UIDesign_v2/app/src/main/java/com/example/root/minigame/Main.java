@@ -20,7 +20,7 @@ import static android.view.Window.FEATURE_NO_TITLE;
 public class Main extends AppCompatActivity {
 
     Button btn_ok, btn_return, btn_setting;
-    Player thisPlayer;
+    public static Player thisPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

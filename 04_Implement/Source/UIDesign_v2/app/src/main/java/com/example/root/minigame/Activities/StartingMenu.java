@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.root.minigame.Main;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
 import com.example.root.minigame.mBluetooth.BluetoothConnection;
@@ -25,13 +26,11 @@ import com.example.root.minigame.mBluetooth.BluetoothConnection;
 public class StartingMenu extends AppCompatActivity {
 
     Button btn_create, btn_find, btn_setting;
-    Player thisPlayer;
-
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
     private final int REQUEST_CODE_DISCOVERABLE = 1001;
-
-    private String mBTAdapterDefaultName;
+    public static String mBTAdapterDefaultName;
+    public static Player enemyPlayer;
     public static BluetoothConnection mConnection = new BluetoothConnection();
     private Handler mHandler = new Handler();
     @TargetApi(Build.VERSION_CODES.M)
@@ -39,13 +38,6 @@ public class StartingMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final Intent intent = getIntent();
-
-        final Bundle bun =  intent.getBundleExtra("bundle");
-
-        thisPlayer = new Player(bun.getString("thisPlayerName"));
-
         AnhXa();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -72,8 +64,6 @@ public class StartingMenu extends AppCompatActivity {
             public void onClick(View view)
             {
 
-
-
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
                 startActivityForResult(discoverableIntent, REQUEST_CODE_DISCOVERABLE);
@@ -86,11 +76,8 @@ public class StartingMenu extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
+                Main.thisPlayer.setHostStatus(false);
                 Intent intent =  new Intent(StartingMenu.this,FindingRoom.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-                bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
-                intent.putExtra("bundle",bundle);
                 startActivity(intent);
             }
         });
@@ -111,8 +98,8 @@ public class StartingMenu extends AppCompatActivity {
             startActivityForResult(OnInten, REQUEST_CODE_ENABLE);
         }
 
-        mBTAdapterDefaultName =  mBTAdapter.getName();
-        mBTAdapter.setName(thisPlayer.getPlayerName());
+        mBTAdapterDefaultName = mBTAdapter.getName();
+        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -150,12 +137,8 @@ public class StartingMenu extends AppCompatActivity {
         }
 
         if(requestCode == REQUEST_CODE_DISCOVERABLE && resultCode == 400){
+            Main.thisPlayer.setHostStatus(true);
             Intent intent =  new Intent(StartingMenu.this,CreatingRoom.class);
-            Bundle bundle = new Bundle();
-            thisPlayer.setHostStatus(true);
-            bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-            bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
-            intent.putExtra("bundle",bundle);
             startActivity(intent);
         }
 
