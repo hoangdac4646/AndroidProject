@@ -38,12 +38,14 @@ public class CreatingRoom extends AppCompatActivity {
 
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
+    public static Player enemyPlayer = new Player();
 
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BluetoothAdapter.getDefaultAdapter().setName(Main.thisPlayer.getPlayerName());
 
         StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
 
@@ -77,10 +79,8 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game2 = (FrameLayout) findViewById(R.id.fl_btn_game2);
         fl_btn_game3 = (FrameLayout) findViewById(R.id.fl_btn_game3);
 
-
         txt_p1Name = (TextView) findViewById(R.id.txt_p1Name);
         txt_p2Name = (TextView) findViewById(R.id.txt_p2Name);
-
 
         iv_p1Ready.setVisibility(View.INVISIBLE);
         iv_p2Ready.setVisibility(View.INVISIBLE);
@@ -99,6 +99,7 @@ public class CreatingRoom extends AppCompatActivity {
 
             }
         });
+
 
         if (Main.thisPlayer.isHost()) {
             mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -157,6 +158,7 @@ public class CreatingRoom extends AppCompatActivity {
         } else {
             fl_p2Name.setVisibility(View.VISIBLE);
             txt_p2Name.setText(Main.thisPlayer.getPlayerName());
+            txt_p1Name.setText(enemyPlayer.getPlayerName());
         }
 
 
@@ -165,13 +167,34 @@ public class CreatingRoom extends AppCompatActivity {
             public void onClick(View view) {
                 if (Main.thisPlayer.isHost()) {
                     if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
+                    {
                         Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     else iv_p1Ready.setVisibility(View.VISIBLE);
                 } else {
                     iv_p2Ready.setVisibility(View.VISIBLE);
                 }
-                StartingMenu.mConnection.sendMessage("Ready");
-                StartingGame(true);
+
+                if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
+                    StartingMenu.mConnection.sendMessage("Start");
+                    StartingGame();
+                }
+                else
+                {
+                    StartingMenu.mConnection.sendMessage("Ready");
+                    {
+                        btn_game1.setEnabled(false);
+                        btn_game2.setEnabled(false);
+                        btn_game3.setEnabled(false);
+
+                        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+                    }
+                    Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
+                }
+
             }
 
         });
@@ -184,32 +207,17 @@ public class CreatingRoom extends AppCompatActivity {
         });
     }
 
-    private void StartingGame(boolean check) {
-        if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE
-                && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE || iv_game3Tick.getVisibility() == View.VISIBLE)) {
-            iv_p1Ready.setVisibility(View.VISIBLE);
-            btn_game1.setEnabled(false);
-            btn_game2.setEnabled(false);
-            btn_game3.setEnabled(false);
+    private void StartingGame() {
+        btn_game1.setEnabled(false);
+        btn_game2.setEnabled(false);
+        btn_game3.setEnabled(false);
 
-            fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
-            fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
-            fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
-            Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-        } else {
-            if (check == true) {
-                btn_game1.setEnabled(false);
-                btn_game2.setEnabled(false);
-                btn_game3.setEnabled(false);
-
-                fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
-                fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
-                fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
-            }
-
-            Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(CreatingRoom.this,Main.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -227,7 +235,6 @@ public class CreatingRoom extends AppCompatActivity {
             startActivityForResult(OnInten, REQUEST_CODE_ENABLE);
         }
 
-        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -295,6 +302,7 @@ public class CreatingRoom extends AppCompatActivity {
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
                         Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
                     } else {
+                        StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
                         fl_p2Name.setVisibility(View.VISIBLE);
                     }
                     break;
@@ -307,13 +315,28 @@ public class CreatingRoom extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                    if (readMessage.contains("/&")) {
+                        enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
+                        if (Main.thisPlayer.isHost()) {
+                            enemyPlayer.setHostStatus(false);
+                            txt_p2Name.setText(enemyPlayer.getPlayerName());
+                        }
+                        else
+                        {
+                            txt_p1Name.setText(enemyPlayer.getPlayerName());
+                            enemyPlayer.setHostStatus(true);
+                        }
+                    }
                     if (readMessage.equals("Ready")) {
                         if (Main.thisPlayer.isHost()) {
                             iv_p2Ready.setVisibility(View.VISIBLE);
                         } else {
                             iv_p1Ready.setVisibility(View.VISIBLE);
                         }
-                        StartingGame(false);
+                    } else if (readMessage.equals("Start")) {
+                        iv_p1Ready.setVisibility(View.VISIBLE);
+                        iv_p2Ready.setVisibility(View.VISIBLE);
+                        StartingGame();
                     }
                     if (!Main.thisPlayer.isHost()) {
                         switch (readMessage) {
@@ -349,11 +372,7 @@ public class CreatingRoom extends AppCompatActivity {
                     String mConnectedDeviceName = null;
                     mConnectedDeviceName = msg.getData().getString(Messages.DEVICE_NAME);
                     Toast.makeText(CreatingRoom.this, mConnectedDeviceName, Toast.LENGTH_LONG).show();
-                    if (Main.thisPlayer.isHost()) {
-                        StartingMenu.enemyPlayer = new Player(mConnectedDeviceName);
-                        fl_p2Name.setVisibility(View.VISIBLE);
-                        txt_p2Name.setText(StartingMenu.enemyPlayer.getPlayerName());
-                    }
+
                     break;
 
                 case Messages.MESSAGE_TOAST:
