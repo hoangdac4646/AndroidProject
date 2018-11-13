@@ -17,8 +17,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,12 +29,21 @@ import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
+import com.example.root.minigame.mBluetooth.Adapter_listview;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
+import com.example.root.minigame.mBluetooth.GuiTinNhan;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CreatingRoom extends AppCompatActivity {
 
-    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_setting;
+    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_setting,btn_guiTinNhan;
+    ListView listView_chat;
+    List<GuiTinNhan> Arr_TinNhan = new ArrayList<>();
+    Adapter_listview adapter_listview;
+    EditText NoiDung;
     ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
     FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3;
     TextView txt_p1Name, txt_p2Name;
@@ -58,6 +69,27 @@ public class CreatingRoom extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_waiting_room);
+        btn_guiTinNhan  = findViewById(R.id.btn_CreateGui);
+        listView_chat = findViewById(R.id.lv_listTinNhan);
+        adapter_listview = new Adapter_listview(CreatingRoom.this,R.layout.custom_listview,Arr_TinNhan);
+        listView_chat.setAdapter(adapter_listview);
+        adapter_listview.notifyDataSetChanged();
+        NoiDung = findViewById(R.id.edt_CreateContent);
+        btn_guiTinNhan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(StartingMenu.mConnection.mBTconnection.getState() !=BluetoothConnectionService.STATE_CONNECTED){
+
+                }else{
+                    String Content = "-8"+NoiDung.getText().toString();
+                    StartingMenu.mConnection.sendMessage(Content);
+                    Arr_TinNhan.add(new GuiTinNhan(NoiDung.getText().toString(),"Me"));
+                    NoiDung.setText("");
+                    adapter_listview.notifyDataSetChanged();
+
+                }
+            }
+        });
 
         btn_ready = (Button) findViewById(R.id.btn_ok);
         btn_return = (Button) findViewById(R.id.btn_return);
@@ -316,56 +348,65 @@ public class CreatingRoom extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    if (readMessage.contains("/&")) {
-                        enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
-                        if (Main.thisPlayer.isHost()) {
-                            enemyPlayer.setHostStatus(false);
-                            txt_p2Name.setText(enemyPlayer.getPlayerName());
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if(readMessage.indexOf("-8")!=-1){
+                        StringBuilder stringBuilderRead = new StringBuilder();
+                        for(int i=2;i<readMessage.length();i++){
+                            stringBuilderRead.append(readMessage.charAt(i));
                         }
-                        else
-                        {
-                            txt_p1Name.setText(enemyPlayer.getPlayerName());
-                            enemyPlayer.setHostStatus(true);
-                        }
+                        Arr_TinNhan.add(new GuiTinNhan(stringBuilderRead.toString(),"Đối thủ"));
+                        adapter_listview.notifyDataSetChanged();
                     }
-                    if (readMessage.equals("Ready")) {
-                        if (Main.thisPlayer.isHost()) {
-                            iv_p2Ready.setVisibility(View.VISIBLE);
-                        } else {
+                    else {
+                        if (readMessage.contains("/&")) {
+                            enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
+                            if (Main.thisPlayer.isHost()) {
+                                enemyPlayer.setHostStatus(false);
+                                txt_p2Name.setText(enemyPlayer.getPlayerName());
+                            } else {
+                                txt_p1Name.setText(enemyPlayer.getPlayerName());
+                                enemyPlayer.setHostStatus(true);
+                            }
+                        }
+                        if (readMessage.equals("Ready")) {
+                            if (Main.thisPlayer.isHost()) {
+                                iv_p2Ready.setVisibility(View.VISIBLE);
+                            } else {
+                                iv_p1Ready.setVisibility(View.VISIBLE);
+                            }
+                        } else if (readMessage.equals("Start")) {
                             iv_p1Ready.setVisibility(View.VISIBLE);
+                            iv_p2Ready.setVisibility(View.VISIBLE);
+                            StartingGame();
                         }
-                    } else if (readMessage.equals("Start")) {
-                        iv_p1Ready.setVisibility(View.VISIBLE);
-                        iv_p2Ready.setVisibility(View.VISIBLE);
-                        StartingGame();
-                    }
-                    if (!Main.thisPlayer.isHost()) {
-                        switch (readMessage) {
-                            case "tick1":
-                                iv_game1Tick.setVisibility(View.VISIBLE);
-                                iv_game2Tick.setVisibility(View.INVISIBLE);
-                                iv_game3Tick.setVisibility(View.INVISIBLE);
-                                break;
-                            case "untick1":
-                                iv_game1Tick.setVisibility(View.INVISIBLE);
-                                break;
-                            case "tick2":
-                                iv_game1Tick.setVisibility(View.INVISIBLE);
-                                iv_game2Tick.setVisibility(View.VISIBLE);
-                                iv_game3Tick.setVisibility(View.INVISIBLE);
-                                break;
-                            case "untick2":
-                                iv_game2Tick.setVisibility(View.INVISIBLE);
-                                break;
-                            case "tick3":
-                                iv_game1Tick.setVisibility(View.INVISIBLE);
-                                iv_game2Tick.setVisibility(View.INVISIBLE);
-                                iv_game3Tick.setVisibility(View.VISIBLE);
-                                break;
-                            case "untick3":
-                                iv_game3Tick.setVisibility(View.INVISIBLE);
-                                break;
+                        if (!Main.thisPlayer.isHost()) {
+                            switch (readMessage) {
+                                case "tick1":
+                                    iv_game1Tick.setVisibility(View.VISIBLE);
+                                    iv_game2Tick.setVisibility(View.INVISIBLE);
+                                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    break;
+                                case "untick1":
+                                    iv_game1Tick.setVisibility(View.INVISIBLE);
+                                    break;
+                                case "tick2":
+                                    iv_game1Tick.setVisibility(View.INVISIBLE);
+                                    iv_game2Tick.setVisibility(View.VISIBLE);
+                                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    break;
+                                case "untick2":
+                                    iv_game2Tick.setVisibility(View.INVISIBLE);
+                                    break;
+                                case "tick3":
+                                    iv_game1Tick.setVisibility(View.INVISIBLE);
+                                    iv_game2Tick.setVisibility(View.INVISIBLE);
+                                    iv_game3Tick.setVisibility(View.VISIBLE);
+                                    break;
+                                case "untick3":
+                                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    break;
 
+                            }
                         }
                     }
                     break;

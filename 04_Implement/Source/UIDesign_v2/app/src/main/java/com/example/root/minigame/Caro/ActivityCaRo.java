@@ -9,10 +9,14 @@
  import android.support.v4.content.ContextCompat;
  import android.support.v7.app.AlertDialog;
  import android.support.v7.app.AppCompatActivity;
+ import android.view.LayoutInflater;
  import android.view.View;
  import android.view.ViewGroup;
+ import android.widget.Button;
+ import android.widget.EditText;
  import android.widget.HorizontalScrollView;
  import android.widget.ImageView;
+ import android.widget.ListView;
  import android.widget.ScrollView;
  import android.widget.TableLayout;
  import android.widget.TableRow;
@@ -23,12 +27,18 @@
  import com.example.root.minigame.Interface.Messages;
  import com.example.root.minigame.Main;
  import com.example.root.minigame.R;
+ import com.example.root.minigame.mBluetooth.Adapter_listview;
  import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
+ import com.example.root.minigame.mBluetooth.GuiTinNhan;
+
+ import java.util.ArrayList;
+ import java.util.List;
 
 
  public class ActivityCaRo extends AppCompatActivity {
     int Index = 1;
     int MAXROW;
+     EditText editText;
     int MAXCOLUM;
     ListOCaro listOCaro;
     TableLayout mtableLayout;
@@ -43,8 +53,27 @@
     TextView lblSumTimePlayer1, lblSumTimePlayer2;
     CountDownTimer countDownTimer;
     Boolean CheckDuocDanh;
-
+    Button ChatCaro;
+    EditText NoiDungChat;
+     private List<GuiTinNhan> guiTinNhans = new ArrayList<>();
+     ListView tinnhan;
+     android.app.AlertDialog.Builder dialogBuilder;
+     android.app.AlertDialog alertDialog;
+     View dialogView;
+     Adapter_listview adapter_listview;
     void AnhXa(){
+
+        ChatCaro = findViewById(R.id.btn_chatCaro);
+
+        dialogBuilder  = new android.app.AlertDialog.Builder(ActivityCaRo.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        dialogView = inflater.inflate(R.layout.custom_chatdialog, null);
+        tinnhan  =dialogView.findViewById(R.id.lv_noidungnhan);
+        adapter_listview = new Adapter_listview(ActivityCaRo.this,R.layout.custom_listview,guiTinNhans);
+        tinnhan.setAdapter(adapter_listview);
+        adapter_listview.notifyDataSetChanged();
+        dialogBuilder .setView(dialogView);
+        alertDialog = dialogBuilder.create();
         MAXROW = 20;
         MAXCOLUM = 20;
         mtableLayout = findViewById(R.id.tbBanCo);
@@ -195,18 +224,33 @@
                      byte[] writeBuf = (byte[]) msg.obj;
                      // construct a string from the buffer
                      String writeMessage = new String(writeBuf);
-                     CheckDuocDanh = false;
+                     if(writeMessage.indexOf("-8") == -1) // Khong Tim Thay Nghi la kh phai tin nhan
+                     {
+                         CheckDuocDanh = false;
+                     }
                      break;
                  case Messages.MESSAGE_READ:
                      byte[] readBuf = (byte[]) msg.obj;
                      // construct a string from the valid bytes in the buffer
                      String readMessage = new String(readBuf, 0, msg.arg1);
-                     if(readMessage.equals("ClientLost")){
-                         ThongBaoChienThang("Chia Buồn", "Bạn Đã Thua");
-                     }else if(readMessage.equals("HostLost")){
-                         ThongBaoChienThang("Chia Buồn", "Bạn Đã Thua");
-                         CheckDuocDanh = true;
-                     }else if(readMessage.equals("MatLuot")){
+                     StringBuilder stringBuilder = new StringBuilder();
+
+
+                     if(readMessage.indexOf("-8") != -1){
+                         StringBuilder stringBuilderRead = new StringBuilder();
+                         for(int i=2;i<readMessage.length();i++){
+                             stringBuilderRead.append(readMessage.charAt(i));
+                         }
+                         guiTinNhans.add(new GuiTinNhan(stringBuilderRead.toString(),"Đối thủ"));
+                         adapter_listview.notifyDataSetChanged();
+                     }
+                     else {
+                         if (readMessage.equals("ClientLost")) {
+                             ThongBaoChienThang("Chia Buồn", "Bạn Đã Thua");
+                         } else if (readMessage.equals("HostLost")) {
+                             ThongBaoChienThang("Chia Buồn", "Bạn Đã Thua");
+                             CheckDuocDanh = true;
+                         } else if (readMessage.equals("MatLuot")) {
 //                         if(Index == 0){
 //                             SumTimePlayer2 += TimeDown - 1000;
 //                             lblSumTimePlayer2.setText(String.format("%dM:%02dS", SumTimePlayer2 / (60 * 1000), (SumTimePlayer2 % (60 * 1000)) / 1000));
@@ -214,15 +258,16 @@
 //                             SumTimePlayer1 += TimeDown - 1000;
 //                             lblSumTimePlayer1.setText(String.format("%dM:%02dS", SumTimePlayer1 / (60 * 1000), (SumTimePlayer1 % (60 * 1000)) / 1000));
 //                         }
-                         CheckDuocDanh = true;
-                     } else{
-                         if(Index == 0){
-                             TinhThoiGianVaLuotDi(1);
-                         }else{
-                             TinhThoiGianVaLuotDi(0);
+                             CheckDuocDanh = true;
+                         } else {
+                             if (Index == 0) {
+                                 TinhThoiGianVaLuotDi(1);
+                             } else {
+                                 TinhThoiGianVaLuotDi(0);
+                             }
+                             listOCaro.Danh(Integer.parseInt(readMessage), (Index + 1) % 2);
+                             CheckDuocDanh = true;
                          }
-                         listOCaro.Danh(Integer.parseInt(readMessage), (Index + 1) % 2);
-                         CheckDuocDanh = true;
                      }
                      break;
                  case Messages.MESSAGE_DEVICE_NAME:
@@ -247,7 +292,27 @@
         setContentView(R.layout.activity_game_ticktactoe);
 
         AnhXa();
+        ChatCaro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                Button Gui2 = dialogView.findViewById(R.id.btn_guitinnhan);
+                editText = dialogView.findViewById(R.id.tv_noidungCaro);
+                Gui2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String D = "-8";
+                        D += editText.getText().toString();
+                        guiTinNhans.add(new GuiTinNhan(editText.getText().toString(), "Me"));
+                        adapter_listview.notifyDataSetChanged();
+                        editText.setText("");
+                        StartingMenu.mConnection.sendMessage(D);
+                    }
+                });
+                alertDialog.show();
+
+            }
+        });
 
         VeBanCo();
 
