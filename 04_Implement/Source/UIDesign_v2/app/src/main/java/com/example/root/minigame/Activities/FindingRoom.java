@@ -54,7 +54,11 @@ public class FindingRoom extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        BluetoothAdapter.getDefaultAdapter().setName(Main.thisPlayer.getPlayerName());
         super.onCreate(savedInstanceState);
+
+        AnhXa();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -73,8 +77,6 @@ public class FindingRoom extends AppCompatActivity {
         DeviceList = (ListView) findViewById(R.id.lv_listRoom);
 
         DeviceList.setOnItemClickListener(mDeviceCLick);
-
-        btn_refresh.callOnClick();
 
         btn_setting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,8 +103,6 @@ public class FindingRoom extends AppCompatActivity {
                     if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
                         String[] dvName = DeviceSelected.getName().split("&");
                         Toast.makeText(FindingRoom.this, "Bạn đã vào phòng của " + dvName[0], Toast.LENGTH_SHORT).show();
-                        StartingMenu.enemyPlayer = new Player(dvName[0]);
-                        StartingMenu.enemyPlayer.setHostStatus(true);
                         Intent intent = new Intent(FindingRoom.this, CreatingRoom.class);
                         startActivity(intent);
                     }
@@ -148,7 +148,6 @@ public class FindingRoom extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mBRFoundDevices, filter);
 
-        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -257,7 +256,7 @@ public class FindingRoom extends AppCompatActivity {
                                 case "Tàu chiến":
                                     Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
                                     break;
-                                default:
+                                case "N/A":
                                     Names.add(new Room(R.drawable.logo_normal, dName[0], dName[1]));
                                     break;
                             }

@@ -29,8 +29,7 @@ public class StartingMenu extends AppCompatActivity {
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
     private final int REQUEST_CODE_DISCOVERABLE = 1001;
-    public static String mBTAdapterDefaultName;
-    public static Player enemyPlayer;
+    public final static String mBTAdapterDefaultName = BluetoothAdapter.getDefaultAdapter().getName();
     public static BluetoothConnection mConnection = new BluetoothConnection();
     private Handler mHandler = new Handler();
     @TargetApi(Build.VERSION_CODES.M)
@@ -38,6 +37,7 @@ public class StartingMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BluetoothAdapter.getDefaultAdapter().setName(Main.thisPlayer.getPlayerName());
         AnhXa();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -98,8 +98,6 @@ public class StartingMenu extends AppCompatActivity {
             startActivityForResult(OnInten, REQUEST_CODE_ENABLE);
         }
 
-        mBTAdapterDefaultName = mBTAdapter.getName();
-        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -147,12 +145,14 @@ public class StartingMenu extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
