@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.root.minigame.CustomListAdapter;
 import com.example.root.minigame.Interface.Messages;
+import com.example.root.minigame.Main;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
 import com.example.root.minigame.Room;
@@ -41,15 +42,12 @@ public class FindingRoom extends AppCompatActivity {
     public static final String DEVICE_ADDRESS = "device_address";
     private static final String DEVICE_CONNECTED_NAME = "device_name";
     private BluetoothAdapter mBTAdapter;
-    private String mBTAdapterDefaultName;
     private BluetoothDevice DeviceSelected = null;// phai gan gia tri cho DeviceSelected
 
     private ListView DeviceList;
     private final int REQUEST_CODE_ENABLE = 101;
     private ArrayList<BluetoothDevice> mDevices = new ArrayList<>();
     private ArrayList<Room> Names = new ArrayList();
-    private
-    Player thisPlayer;
     Message msg1;
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -57,12 +55,6 @@ public class FindingRoom extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-        Bundle bun = intent.getBundleExtra("bundle");
-
-        thisPlayer = new Player(bun.getString("thisPlayerName"));
-        mBTAdapterDefaultName = bun.getString("BTDefaultName");
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -84,15 +76,13 @@ public class FindingRoom extends AppCompatActivity {
 
         btn_refresh.callOnClick();
 
-        btn_setting.setOnClickListener(new View.OnClickListener()
-        {
+        btn_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
         });
 
-        btn_refresh.setOnClickListener(new View.OnClickListener()
-        {
+        btn_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDevices.clear();
@@ -106,29 +96,24 @@ public class FindingRoom extends AppCompatActivity {
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (DeviceSelected != null)
-                {
+                if (DeviceSelected != null) {
                     String address = DeviceSelected.getAddress();
-                    if(StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED){
-                        Toast.makeText(FindingRoom.this, "Bạn đã vào phòng của "+ DeviceSelected.getName(), Toast.LENGTH_SHORT).show();
+                    if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
+                        String[] dvName = DeviceSelected.getName().split("&");
+                        Toast.makeText(FindingRoom.this, "Bạn đã vào phòng của " + dvName[0], Toast.LENGTH_SHORT).show();
+                        StartingMenu.enemyPlayer = new Player(dvName[0]);
+                        StartingMenu.enemyPlayer.setHostStatus(true);
                         Intent intent = new Intent(FindingRoom.this, CreatingRoom.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-                        bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
-                        intent.putExtra("bundle",bundle);
                         startActivity(intent);
-
                     }
 
-                    if(DeviceSelected.getBondState() !=  BluetoothDevice.BOND_NONE){
+                    if (DeviceSelected.getBondState() != BluetoothDevice.BOND_NONE) {
                         StartingMenu.mConnection.Connect(address);
 
 
                     }
 
-                }
-                else 
-                {
+                } else {
                     Toast.makeText(FindingRoom.this, "Bạn chưa chọn phòng!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -163,7 +148,7 @@ public class FindingRoom extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mBRFoundDevices, filter);
 
-        mBTAdapter.setName(thisPlayer.getPlayerName());
+        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -196,7 +181,7 @@ public class FindingRoom extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mBTAdapter.cancelDiscovery();
             DeviceSelected = mDevices.get(position);
-            if(DeviceSelected.getBondState() == BluetoothDevice.BOND_NONE){
+            if (DeviceSelected.getBondState() == BluetoothDevice.BOND_NONE) {
                 Toast.makeText(FindingRoom.this, "Cái này chua paired", Toast.LENGTH_SHORT).show();
                 DeviceSelected.createBond();
             }
@@ -221,14 +206,14 @@ public class FindingRoom extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
-        mBTAdapter.setName(mBTAdapterDefaultName);
+        mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
-        mBTAdapter.setName(mBTAdapterDefaultName);
+        mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
         }
@@ -255,30 +240,29 @@ public class FindingRoom extends AppCompatActivity {
 
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getBondState() == BluetoothDevice.BOND_BONDED || device.getBondState() == BluetoothDevice.BOND_NONE){
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED || device.getBondState() == BluetoothDevice.BOND_NONE) {
                     //list devices paired
                     mDevices.add(device);
-                    if(device.getName() != "" && device.getName() != null){
-                        String [] dName = device.getName().split("&");
-                        if (dName != null && !dName[0].equals("")) {
-                            if (dName.length < 2)
-                                Names.add(new Room(R.drawable.logo_normal, dName[0], "N/A"));
-                            else
-                            {
-                                switch (dName[1]) {
-                                    case "Caro":
-                                        Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
-                                        break;
-                                    case "Sudoku":
-                                        Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
-                                        break;
-                                    default:
-                                        Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
-                                        break;
-                                }
+                    if (device.getName() != null && !device.getName().equals("")) {
+                        String[] dName = device.getName().split("&");
+                        if (dName.length > 1)
+                        {
+                            switch (dName[1]) {
+                                case "Caro":
+                                    Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
+                                    break;
+                                case "Sudoku":
+                                    Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
+                                    break;
+                                case "Tàu chiến":
+                                    Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
+                                    break;
+                                default:
+                                    Names.add(new Room(R.drawable.logo_normal, dName[0], dName[1]));
+                                    break;
                             }
-                            DeviceList.setAdapter(new CustomListAdapter(FindingRoom.this, Names));
                         }
+                        DeviceList.setAdapter(new CustomListAdapter(FindingRoom.this, Names));
                     }
 
                 }
@@ -327,15 +311,10 @@ public class FindingRoom extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     break;
                 case Messages.MESSAGE_DEVICE_NAME:
-                    if(StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED){
-                        Toast.makeText(FindingRoom.this, "Bạn đã vào phòng của "+ DeviceSelected.getName(), Toast.LENGTH_SHORT).show();
+                    if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
+                        Toast.makeText(FindingRoom.this, "Bạn đã vào phòng của " + DeviceSelected.getName(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(FindingRoom.this, CreatingRoom.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-                        bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
-                        intent.putExtra("bundle",bundle);
                         startActivity(intent);
-
                     }
                     break;
             }
