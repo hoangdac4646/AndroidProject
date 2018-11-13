@@ -31,11 +31,9 @@
 
                 <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
                     android:layout_weight="3"
-                    android:src="@drawable/logo"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/logo_style"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -100,12 +98,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@drawable/btn_ok"
+                        android:background="@drawable/btn_ok_style"
                         android:fontFamily="Segoe IU"
                         android:paddingBottom="5dp"
                         android:text="VÀO PHÒNG"
                         android:textColor="#ffffff"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -119,11 +117,11 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:paddingBottom="5dp"
-                        android:background="@drawable/btn_return"
+                        android:background="@drawable/btn_return_style"
                         android:fontFamily="Segoe IU"
                         android:text="QUAY LẠI"
                         android:textColor="#ffffff"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
 
@@ -149,7 +147,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@drawable/background_yellow">
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -175,7 +176,6 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
                         android:background="@drawable/pnl_roomlist">
 
                         <LinearLayout
@@ -192,58 +192,9 @@
                             android:paddingTop="5dp"
                             android:text="DANH SÁCH PHÒNG CHỜ"
                             android:textColor="#ffffff"
-                            android:textSize="16dp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="0.1">
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_weight="0.3">
-
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="ID"
-                                        android:textAlignment="center"
-                                        android:textColor="#000000"
-                                        android:textSize="15dp"
-                                        android:textStyle="bold"/>                                   />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_weight="1">
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="Chủ phòng"
-                                        android:textAlignment="center"
-                                        android:textColor="#000000"
-                                        android:textSize="15dp"
-                                        android:textStyle="bold"/>
-
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_weight="1">
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:text="Game"
-                                        android:textAlignment="center"
-                                        android:textColor="#000000"
-                                        android:textSize="15dp"
-                                        android:textStyle="bold"/>
-
-                                </LinearLayout>
-
-                            </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -255,7 +206,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
-                                    android:divider="#ffffff"
+                                    android:divider="#e6e6e6"
                                     android:dividerHeight="8dp">
                                 </ListView>
 
@@ -270,9 +221,41 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:layout_weight="0.1">
+                                android:layout_weight="0.18">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1">
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0.8">
+
+                                    <Button
+                                        android:id="@+id/btn_refresh"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/btn_turn"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1">
+
+                                </LinearLayout>
 
                             </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05"/>
+
 
                         </LinearLayout>
                     </FrameLayout>
@@ -288,7 +271,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5" />
-
 
         </LinearLayout>
 

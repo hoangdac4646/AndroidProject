@@ -26,6 +26,8 @@ public class Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        thisPlayer = new Player();
+
         final Dialog dialog_setName = new Dialog(Main.this);
         dialog_setName.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_setName.setContentView(R.layout.dialog_set_nickname);
@@ -38,9 +40,9 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String playerName = edt_playerName.getText().toString();
-                if (playerName != null && !playerName.equals(""))
+                if (!playerName.equals(""))
                 {
-                    thisPlayer = new Player(playerName);
+                    thisPlayer.setPlayerName(playerName);
                     dialog_setName.dismiss();
                     Toast.makeText(Main.this, "Đặt tên nhân vật thành công!", Toast.LENGTH_SHORT).show();
                 }
@@ -67,11 +69,18 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-                Intent intent =  new Intent(Main.this,StartingMenu.class);
-                Bundle bun = new Bundle();
-                bun.putString("thisPlayerName", thisPlayer.getName());
-                intent.putExtra("bundle",bun);
-                startActivity(intent);
+                if (thisPlayer.getPlayerName().equals(""))
+                {
+                    Toast.makeText(Main.this, "Vui lòng đặt tên nhân vật!", Toast.LENGTH_SHORT).show();
+                    dialog_setName.show();
+                }
+                else {
+                    Intent intent = new Intent(Main.this, StartingMenu.class);
+                    Bundle bun = new Bundle();
+                    bun.putString("thisPlayerName", thisPlayer.getPlayerName());
+                    intent.putExtra("bundle", bun);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -108,6 +117,10 @@ public class Main extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
+    }
+
+    public static class CustomListApdater_Chat {
+
     }
 }
 

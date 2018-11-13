@@ -134,7 +134,7 @@
                 android:layout_marginStart="30dp"
                 android:background="@drawable/timer"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="0dp" />
+                tools:layout_editor_absoluteX="0dp"/>
 
             <TextView
                 android:layout_width="wrap_content"

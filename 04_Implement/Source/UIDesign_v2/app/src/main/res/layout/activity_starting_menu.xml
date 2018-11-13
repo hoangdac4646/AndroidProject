@@ -7,18 +7,18 @@ android:layout_height="match_parent"
 android:background="@drawable/background_main"
 android:orientation="horizontal"
 android:visibility="visible"
-tools:context=".Activities.StartingMenu">
+tools:context=".Main">
 
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
-    </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 
     <LinearLayout
 
@@ -27,34 +27,32 @@ tools:context=".Activities.StartingMenu">
         android:layout_weight="1.2"
         android:orientation="vertical">
 
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2">
+            android:layout_weight="2"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.2">
+
+            </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="20">
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
                 <ImageView
                     android:id="@+id/imageView5"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="44dp"
-                    android:src="@drawable/logo"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:src="@drawable/logo_style" />
             </LinearLayout>
 
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -72,17 +70,13 @@ tools:context=".Activities.StartingMenu">
 
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:background="@drawable/btn_ok"
+                android:background="@drawable/btn_ok_style"
                 android:fontFamily="Segoe IU"
                 android:paddingBottom="5dp"
                 android:text="TẠO PHÒNG"
                 android:textColor="#ffffff"
-                android:textSize="25dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/imageView5"
-                app:layout_constraintHorizontal_bias="0.375"
-                app:layout_constraintStart_toStartOf="@+id/imageView5"
-                app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -91,7 +85,7 @@ tools:context=".Activities.StartingMenu">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.4"/>
+            android:layout_weight="0.3"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -110,17 +104,13 @@ tools:context=".Activities.StartingMenu">
 
                 android:layout_marginStart="8dp"
                 android:layout_weight="8"
-                android:background="@drawable/btn_return"
+                android:background="@drawable/btn_return_style"
                 android:fontFamily="Segoe IU"
                 android:paddingBottom="5dp"
                 android:text="TÌM PHÒNG"
                 android:textColor="#ffffff"
-                android:textSize="25dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/imageView5"
-                app:layout_constraintHorizontal_bias="0.375"
-                app:layout_constraintStart_toStartOf="@+id/imageView5"
-                app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,9 +26,9 @@ import com.example.root.minigame.R;
 
 public class CreatingRoom extends AppCompatActivity {
 
-    Button btn_ready, btn_return, btn_game1, btn_game2, btn_mode1, btn_mode2, btn_setting;
-    ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_mode1Tick, iv_mode2Tick;
-    FrameLayout fl_p1Name, fl_p2Name;
+    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3 , btn_setting;
+    ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
+    FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1,fl_btn_game2,fl_btn_game3;
     TextView txt_p1Name, txt_p2Name;
     Player thisPlayer;
 
@@ -48,7 +47,7 @@ public class CreatingRoom extends AppCompatActivity {
 
         final Bundle bun = intent.getBundleExtra("bundle");
 
-        thisPlayer = new Player(bun.getString("thisPlayerName"),false,true);
+        thisPlayer = new Player(bun.getString("thisPlayerName"));
 
         mBTAdapterDefaultName = bun.getString("BTDefaultName");
 
@@ -63,23 +62,25 @@ public class CreatingRoom extends AppCompatActivity {
 
         btn_ready = (Button) findViewById(R.id.btn_ok);
         btn_return = (Button) findViewById(R.id.btn_return);
-        btn_mode1 = (Button) findViewById(R.id.btn_mode1);
-        btn_mode2 = (Button) findViewById(R.id.btn_mode2);
         btn_game1 = (Button) findViewById(R.id.btn_game1);
         btn_game2 = (Button) findViewById(R.id.btn_game2);
+        btn_game3 = (Button) findViewById(R.id.btn_game3);
         btn_setting = (Button) findViewById(R.id.btn_setting);
 
         iv_p1Ready = (ImageView) findViewById(R.id.iv_p1Ready);
         iv_p2Ready = (ImageView) findViewById(R.id.iv_p2Ready);
 
-        iv_mode1Tick = (ImageView) findViewById(R.id.iv_mode1Tick);
-        iv_mode2Tick = (ImageView) findViewById(R.id.iv_mode2Tick);
-
         iv_game1Tick = (ImageView) findViewById(R.id.iv_game1Tick);
         iv_game2Tick = (ImageView) findViewById(R.id.iv_game2Tick);
+        iv_game3Tick = (ImageView) findViewById(R.id.iv_game3Tick);
+
 
         fl_p1Name = (FrameLayout) findViewById(R.id.fl_p1Name);
         fl_p2Name = (FrameLayout) findViewById(R.id.fl_p2Name);
+        fl_btn_game1 = (FrameLayout) findViewById(R.id.fl_btn_game1);
+        fl_btn_game2 = (FrameLayout) findViewById(R.id.fl_btn_game2);
+        fl_btn_game3 = (FrameLayout) findViewById(R.id.fl_btn_game3);
+
 
         txt_p1Name = (TextView) findViewById(R.id.txt_p1Name);
         txt_p2Name = (TextView) findViewById(R.id.txt_p2Name);
@@ -90,14 +91,12 @@ public class CreatingRoom extends AppCompatActivity {
 
         iv_game1Tick.setVisibility(View.INVISIBLE);
         iv_game2Tick.setVisibility(View.INVISIBLE);
-
-        iv_mode1Tick.setVisibility(View.INVISIBLE);
-        iv_mode2Tick.setVisibility(View.INVISIBLE);
+        iv_game3Tick.setVisibility(View.INVISIBLE);
 
         fl_p1Name.setVisibility(View.VISIBLE);
         fl_p2Name.setVisibility(View.INVISIBLE);
 
-        txt_p1Name.setText(thisPlayer.getName());
+        txt_p1Name.setText(thisPlayer.getPlayerName());
 
         btn_setting.setOnClickListener(new View.OnClickListener()
         {
@@ -112,15 +111,15 @@ public class CreatingRoom extends AppCompatActivity {
             public void onClick(View v) {
                 if (iv_game1Tick.getVisibility() == View.VISIBLE) {
                     iv_game1Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getName());
+                    mBTAdapter.setName(thisPlayer.getPlayerName());
                 }
 
                 else {
                     iv_game1Tick.setVisibility(View.VISIBLE);
                     iv_game2Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getName()+"&"+"Tàu chiến");
+                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Caro");
                 }
-                AnhXa();
             }
         });
 
@@ -129,37 +128,29 @@ public class CreatingRoom extends AppCompatActivity {
             public void onClick(View v) {
                 if (iv_game2Tick.getVisibility() == View.VISIBLE) {
                     iv_game2Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getName());
+                    mBTAdapter.setName(thisPlayer.getPlayerName());
                 }
                 else {
                     iv_game2Tick.setVisibility(View.VISIBLE);
                     iv_game1Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getName()+"&"+"Caro");
-                }
-                AnhXa();
-            }
-        });
-
-        btn_mode1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (iv_mode1Tick.getVisibility() == View.VISIBLE)
-                    iv_mode1Tick.setVisibility(View.INVISIBLE);
-                else {
-                    iv_mode1Tick.setVisibility(View.VISIBLE);
-                    iv_mode2Tick.setVisibility(View.INVISIBLE);
+                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Tàu chiến");
                 }
             }
         });
 
-        btn_mode2.setOnClickListener(new View.OnClickListener() {
+        btn_game3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iv_mode2Tick.getVisibility() == View.VISIBLE)
-                    iv_mode2Tick.setVisibility(View.INVISIBLE);
+                if (iv_game3Tick.getVisibility() == View.VISIBLE) {
+                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                    mBTAdapter.setName(thisPlayer.getPlayerName());
+                }
                 else {
-                    iv_mode2Tick.setVisibility(View.VISIBLE);
-                    iv_mode1Tick.setVisibility(View.INVISIBLE);
+                    iv_game3Tick.setVisibility(View.VISIBLE);
+                    iv_game2Tick.setVisibility(View.INVISIBLE);
+                    iv_game1Tick.setVisibility(View.INVISIBLE);
+                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Sudoku");
                 }
             }
         });
@@ -170,29 +161,34 @@ public class CreatingRoom extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (iv_p2Ready.getVisibility() == View.VISIBLE
-                        && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE)
-                        && (iv_mode1Tick.getVisibility() == View.VISIBLE || iv_mode2Tick.getVisibility() == View.VISIBLE)) {
+                        && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE || iv_game3Tick.getVisibility() == View.VISIBLE))
+                {
                     iv_p1Ready.setVisibility(View.VISIBLE);
                     btn_game1.setEnabled(false);
                     btn_game2.setEnabled(false);
-                    btn_mode1.setEnabled(false);
-                    btn_mode2.setEnabled(false);
+                    btn_game3.setEnabled(false);
+
+                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+
                     Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_LONG).show();
                     finish();
                 }
-                else if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE)
+                else if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
                     Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
-                else if (iv_mode1Tick.getVisibility() == View.INVISIBLE && iv_mode2Tick.getVisibility() == View.INVISIBLE)
-                    Toast.makeText(CreatingRoom.this, "Bạn chưa chọn mode!", Toast.LENGTH_SHORT).show();
                 else
                 {
                     iv_p1Ready.setVisibility(View.VISIBLE);
-                    Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
-                    thisPlayer.setReadyStatus(true);
                     btn_game1.setEnabled(false);
                     btn_game2.setEnabled(false);
-                    btn_mode1.setEnabled(false);
-                    btn_mode2.setEnabled(false);
+                    btn_game3.setEnabled(false);
+
+                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+
+                    Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -220,6 +216,7 @@ public class CreatingRoom extends AppCompatActivity {
             startActivityForResult(OnInten, REQUEST_CODE_ENABLE);
         }
 
+        mBTAdapter.setName(thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -261,12 +258,14 @@ public class CreatingRoom extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
     }
 

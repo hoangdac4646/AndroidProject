@@ -1,49 +1,45 @@
 package com.example.root.minigame;
 
 public class Player {
-    private String name;
+    private String playerName;
+    private boolean hostStatus = true;
+    private int avatarID;
 
-    private boolean hostStatus = false;
-    private boolean readyStatus = false;
-
-    public Player() {
-        this.name= null;
-        this.readyStatus= false;
-        this.hostStatus = false;
-    }
-    public Player(String name) {
-        this.name= name;
-        this.readyStatus= false;
-        this.hostStatus = false;
+    public Player()
+    {
+        this.playerName = "";
+        avatarID = R.drawable.logo_style;
     }
 
-    public Player(String name , boolean readyStatus, boolean hostStatus) {
-        this.name= name;
-        this.readyStatus= readyStatus;
-        this.hostStatus = hostStatus;
+    public Player(String playerName)
+    {
+        this.playerName = playerName;
+        avatarID = R.drawable.logo_style;
     }
 
-    public String getName() {
-        return name;
+    public Player(String playerName, int avatarID)
+    {
+        this.playerName = playerName;
+        this.avatarID = avatarID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getAvatarID() {
+        return avatarID;
     }
 
-    public boolean isReady() {
-        return readyStatus;
+    public String getPlayerName() {
+        return playerName;
     }
+
+    public void setAvatarID(int avatarID) {
+        this.avatarID = avatarID;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public boolean isHost() {
         return hostStatus;
     }
-
-
-    public void setReadyStatus(boolean readyStatus) {
-        this.readyStatus = readyStatus;
-    }
-    public void setHostStatus(boolean readyStatus) {
-        this.readyStatus = readyStatus;
-    }
-
 }

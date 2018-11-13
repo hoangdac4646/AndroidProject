@@ -16,7 +16,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.root.minigame.Main;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
 
@@ -42,7 +41,6 @@ public class StartingMenu extends AppCompatActivity {
         final Bundle bun =  intent.getBundleExtra("bundle");
 
         thisPlayer = new Player(bun.getString("thisPlayerName"));
-
 
         AnhXa();
 
@@ -71,7 +69,7 @@ public class StartingMenu extends AppCompatActivity {
                 Intent intent =  new Intent(StartingMenu.this,CreatingRoom.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-                bundle.putString("thisPlayerName",thisPlayer.getName());
+                bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
                 intent.putExtra("bundle",bundle);
                 startActivity(intent);
             }
@@ -85,7 +83,7 @@ public class StartingMenu extends AppCompatActivity {
                 Intent intent =  new Intent(StartingMenu.this,FindingRoom.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("BTDefaultName",mBTAdapterDefaultName);
-                bundle.putString("thisPlayerName",thisPlayer.getName());
+                bundle.putString("thisPlayerName",thisPlayer.getPlayerName());
                 intent.putExtra("bundle",bundle);
                 startActivity(intent);
             }
@@ -108,7 +106,7 @@ public class StartingMenu extends AppCompatActivity {
         }
 
         mBTAdapterDefaultName =  mBTAdapter.getName();
-        mBTAdapter.setName(thisPlayer.getName());
+        mBTAdapter.setName(thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }

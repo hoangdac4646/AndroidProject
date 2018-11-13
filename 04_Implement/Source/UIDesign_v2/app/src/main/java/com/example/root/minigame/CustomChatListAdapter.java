@@ -1,25 +1,23 @@
 package com.example.root.minigame;
 
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.List;
-import com.example.root.minigame.Room;
 
-public class CustomListAdapter extends BaseAdapter {
+public class CustomChatListAdapter extends BaseAdapter {
 
-    private List<Room> listData;
+    private List<ChatMessage> listData;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public CustomListAdapter(Context aContext,  List<Room> listData) {
+    public CustomChatListAdapter(Context aContext,  List<ChatMessage> listData) {
         this.context = aContext;
         this.listData = listData;
         layoutInflater = LayoutInflater.from(aContext);
@@ -47,25 +45,25 @@ public class CustomListAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.activity_list__bt__devices, null);
             holder = new ViewHolder();
             holder.avatarView = (ImageView) convertView.findViewById(R.id.iv_roomAvatar);
-            holder.hostNameView = (TextView) convertView.findViewById(R.id.txt_hostName);
-            holder.gameNameView = (TextView) convertView.findViewById(R.id.txt_gameName);
+            holder.playerNameView = (TextView) convertView.findViewById(R.id.txt_hostName);
+            holder.messageView = (TextView) convertView.findViewById(R.id.txt_gameName);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Room room = this.listData.get(position);
-        holder.hostNameView.setText("Host: "+ room.getHostName());
-        holder.gameNameView.setText("Game: " + room.getGameName());
-        holder.avatarView.setBackgroundResource(room.getAvatarID());
+        ChatMessage cm = this.listData.get(position);
+        holder.playerNameView.setText(cm.getPlayer().getPlayerName());
+        holder.avatarView.setBackgroundResource(cm.getPlayer().getAvatarID());
+        holder.messageView.setText(cm.getMessage());
 
         return convertView;
     }
 
     static class ViewHolder {
         ImageView avatarView;
-        TextView hostNameView;
-        TextView gameNameView;
+        TextView playerNameView;
+        TextView messageView;
     }
 
 }

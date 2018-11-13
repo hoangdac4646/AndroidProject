@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class FindingRoom extends AppCompatActivity {
 
-    Button btn_ok, btn_return, btn_setting;
+    Button btn_ok, btn_return, btn_setting, btn_refresh;
     public static final String DEVICE_ADDRESS = "device_address";
     private static final String DEVICE_CONNECTED_NAME = "device_name";
     private BluetoothAdapter mBTAdapter;
@@ -44,7 +44,6 @@ public class FindingRoom extends AppCompatActivity {
     private final int REQUEST_CODE_ENABLE = 101;
     private ArrayList<BluetoothDevice> mDevices = new ArrayList<>();
     private ArrayList<Room> Names = new ArrayList();
-    static int count = 0;
     Player thisPlayer;
 
 
@@ -69,20 +68,30 @@ public class FindingRoom extends AppCompatActivity {
         btn_ok = (Button) findViewById(R.id.btn_ok);
         btn_return = (Button) findViewById(R.id.btn_return);
         btn_setting = (Button) findViewById(R.id.btn_setting);
+        btn_refresh = (Button) findViewById(R.id.btn_refresh);
 
 
         DeviceList = (ListView) findViewById(R.id.lv_listRoom);
 
-        AnhXa();
-
-        count = 0;
         DeviceList.setOnItemClickListener(mDeviceCLick);
+
+        btn_refresh.callOnClick();
 
         btn_setting.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
+            }
+        });
 
+        btn_refresh.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                mDevices.clear();
+                Names.clear();
+                DeviceList.setAdapter(null);
+                AnhXa();
             }
         });
 
@@ -136,6 +145,7 @@ public class FindingRoom extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mBRFoundDevices, filter);
 
+        mBTAdapter.setName(thisPlayer.getPlayerName());
         CheckBTpermission();
         discovery();
     }
@@ -188,12 +198,14 @@ public class FindingRoom extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(mBTAdapterDefaultName);
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
@@ -223,13 +235,25 @@ public class FindingRoom extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if(device.getBondState() == BluetoothDevice.BOND_BONDED || device.getBondState() == BluetoothDevice.BOND_NONE){
                     //list devices paired
-                    count++;
                     mDevices.add(device);
                     String [] dName = device.getName().split("&");
-                    if (dName != null && dName[0] != "") {
+                    if (dName != null && !dName[0].equals("")) {
                         if (dName.length < 2)
-                            Names.add(new Room(count, dName[0], "N/A"));
-                        else Names.add(new Room(count, dName[0], dName[1]));
+                            Names.add(new Room(R.drawable.logo_normal, dName[0], "N/A"));
+                        else
+                        {
+                            switch (dName[1]) {
+                                case "Caro":
+                                    Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
+                                    break;
+                                case "Sudoku":
+                                    Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
+                                    break;
+                                default:
+                                    Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
+                                    break;
+                            }
+                        }
                         DeviceList.setAdapter(new CustomListAdapter(FindingRoom.this, Names));
                     }
                 }

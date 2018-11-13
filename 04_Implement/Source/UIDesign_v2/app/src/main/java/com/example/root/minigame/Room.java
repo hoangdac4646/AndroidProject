@@ -3,23 +3,22 @@ package com.example.root.minigame;
 public class Room {
     private String hostName;
 
-    // Image name (Without extension)
     private String gameName;
 
-    private int ID;
+    private int avatarID;
 
-    public Room(int ID,String hostName, String gameName) {
-        this.ID= ID;
+    public Room(int avatarID,String hostName, String gameName) {
+        this.avatarID= avatarID;
         this.hostName= hostName;
         this.gameName= gameName;
     }
 
-    public int getRoomID() {
-        return ID;
+    public int getAvatarID() {
+        return avatarID;
     }
 
-    public void setRoomID(int ID) {
-        this.ID = ID;
+    public void setAvatarID(int avatarIDID) {
+        this.avatarID = avatarIDID;
     }
 
     public String getHostName() {
@@ -40,6 +39,6 @@ public class Room {
 
     @Override
     public String toString()  {
-        return this.ID+"|"+ this.hostName+"|"+this.gameName;
+        return this.avatarID+"|"+ this.hostName+"|"+this.gameName;
     }
 }

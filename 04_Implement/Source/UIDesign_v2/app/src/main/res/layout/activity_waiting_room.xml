@@ -21,14 +21,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.5"
             android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:src="@drawable/logo"
+                android:src="@drawable/logo_style"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -67,27 +67,25 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.5"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
-                android:layout_weight="0.8"
+                android:layout_weight="0.5"
                 android:fontFamily="Segoe IU"
                 android:text="Người tham gia:"
                 android:textColor="#ffffff"
-
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_weight="0.8">
+                android:layout_weight="0.5">
 
                 <FrameLayout
                     android:id="@+id/fl_p1Name"
@@ -104,7 +102,7 @@
                         android:text="Ahihi"
                         android:textAlignment="center"
                         android:textColor="#ffffff"
-                        android:textSize="15dp" />
+                        android:textSize="15sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -148,7 +146,7 @@
                         android:text="Ahihi123"
                         android:textAlignment="center"
                         android:textColor="#ffffff"
-                        android:textSize="15dp" />
+                        android:textSize="15sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -179,7 +177,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="1.8"
             android:orientation="vertical">
 
             <TextView
@@ -188,11 +186,11 @@
                 android:layout_height="0dp"
                 android:layout_marginBottom="2dp"
                 android:layout_marginStart="16dp"
-                android:layout_weight="0.2"
+                android:layout_weight="0.3"
                 android:fontFamily="Segoe IU"
                 android:text="Chọn game:"
                 android:textColor="#ffffff"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -207,43 +205,12 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
 
                         <FrameLayout
-                            android:id="@+id/iv_3"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/gametag1">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:paddingBottom="10dp"
-                                android:paddingLeft="4dp"
-                                android:paddingRight="4dp"
-                                android:paddingTop="10dp"
-                                android:text="Tàu chiến"
-                                android:textAlignment="center"
-                                android:textColor="#ffffff"
-                                android:textSize="12dp"
-                                android:textStyle="bold" />
-                        </FrameLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="4">
-
-                        <FrameLayout
+                            android:id="@+id/fl_btn_game1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/gamereview1">
+                            android:background="@drawable/review_game1_room">
 
                             <Button
                                 android:id="@+id/btn_game1"
@@ -258,7 +225,7 @@
                                 <LinearLayout
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
-                                    android:layout_weight="3"/>
+                                    android:layout_weight="4.5"/>
 
                                 <LinearLayout
                                     android:layout_width="0dp"
@@ -289,15 +256,12 @@
                             </LinearLayout>
                         </FrameLayout>
 
-
-                    </LinearLayout>
-
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.2">
+                    android:layout_weight="0.7">
 
                 </LinearLayout>
 
@@ -306,42 +270,12 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
 
                         <FrameLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/gametag2">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:paddingBottom="10dp"
-                                android:paddingLeft="4dp"
-                                android:paddingRight="4dp"
-                                android:paddingTop="10dp"
-                                android:text="Cờ Caro"
-                                android:textAlignment="center"
-                                android:textColor="#ffffff"
-                                android:textSize="12dp"
-                                android:textStyle="bold" />
-                        </FrameLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="4">
-
-                        <FrameLayout
+                            android:id="@+id/fl_btn_game2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/gamereview2">
+                            android:background="@drawable/review_game2_room">
 
                             <Button
                                 android:id="@+id/btn_game2"
@@ -356,7 +290,7 @@
                                 <LinearLayout
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
-                                    android:layout_weight="3"/>
+                                    android:layout_weight="4.5"/>
 
                                 <LinearLayout
                                     android:layout_width="0dp"
@@ -386,32 +320,16 @@
 
                             </LinearLayout>
                         </FrameLayout>
-                    </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginBottom="3dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_weight="0.5"
-                android:fontFamily="Segoe IU"
-                android:text="Chọn mode:"
-                android:textColor="#ffffff"
-                android:textSize="16dp"
-                android:textStyle="bold" />
+                android:layout_weight="0.1"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -423,24 +341,26 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_weight="0.85">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1">
 
                     <FrameLayout
+                        android:id="@+id/fl_btn_game3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/mode1">
+                        android:background="@drawable/review_game3_room">
+
                         <Button
-                            android:id="@+id/btn_mode1"
+                            android:id="@+id/btn_game3"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@null"
-                            android:fontFamily="Segoe IU"
-                            android:paddingRight="12dp"
-                            android:text="Đối đầu"
-                            android:textAlignment="textEnd"
-                            android:textColor="#ffffff"
-                            android:textSize="12dp"
-                            android:textStyle="bold" />
+                            android:background="@null" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -449,7 +369,7 @@
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_weight="6"/>
+                                android:layout_weight="4.5"/>
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -460,10 +380,10 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
-                                    android:layout_weight="1">
+                                    android:layout_weight="1.1">
 
                                     <ImageView
-                                        android:id="@+id/iv_mode1Tick"
+                                        android:id="@+id/iv_game3Tick"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:background="@drawable/icon_chosentick" />
@@ -473,94 +393,33 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
-                                    android:layout_weight="2">
+                                    android:layout_weight="4">
                                 </LinearLayout>
                             </LinearLayout>
 
                         </LinearLayout>
                     </FrameLayout>
 
-
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.2">
+                    android:layout_weight="0.85">
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/mode2">
-                        <Button
-                            android:id="@+id/btn_mode2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:fontFamily="Segoe IU"
-                            android:paddingRight="12dp"
-                            android:text="Thách đấu"
-                            android:textAlignment="textEnd"
-                            android:textColor="#ffffff"
-                            android:textSize="12dp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="6"/>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="1">
-
-                                    <ImageView
-                                        android:id="@+id/iv_mode2Tick"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="@drawable/icon_chosentick" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="2">
-                                </LinearLayout>
-                            </LinearLayout>
-
-                        </LinearLayout>
-                    </FrameLayout>
-                </LinearLayout>
-
 
             </LinearLayout>
 
 
         </LinearLayout>
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.8"
+            android:layout_weight="0.5"
             android:orientation="vertical">
 
             <LinearLayout
@@ -591,7 +450,7 @@
                         android:paddingBottom="5dp"
                         android:text="SẴN SÀNG"
                         android:textColor="#ffffff"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -617,7 +476,7 @@
                         android:paddingBottom="5dp"
                         android:text="QUAY LẠI"
                         android:textColor="#ffffff"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
@@ -637,7 +496,8 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/background_yellow">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -670,10 +530,10 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="Segoe IU"
                         android:paddingLeft="10dp"
-                        android:paddingTop="5dp"
+                        android:paddingTop="3dp"
                         android:text="CHAT"
                         android:textColor="#ffffff"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.038"
@@ -745,7 +605,7 @@
                             android:padding="5dp"
                             android:textColor="#000000"
                             android:textColorHint="@color/black_overlay"
-                            android:textSize="15dp" />
+                            android:textSize="15sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -759,7 +619,7 @@
                             android:background="@drawable/btn_send"
                             android:text="Gửi"
                             android:textColor="#000000"
-                            android:textSize="15dp" />
+                            android:textSize="15sp" />
                     </LinearLayout>
 
                 </LinearLayout>
