@@ -1,0 +1,4 @@
+#Tue Nov 13 19:16:53 ICT 2018
+base.0=D\:\\Dai-Hoc\\Nam-3\\HK1\\Andriod\\GitHub\\New folder\\AndroidProject\\04_Implement\\Source\\UIDesign_v2\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\55
+path.0=classes.dex
+renamed.0=classes.dex

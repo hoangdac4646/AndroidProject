@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.minigame.Caro.ActivityCaRo;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.Player;
@@ -217,7 +218,7 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(CreatingRoom.this,Main.class));
+        startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
