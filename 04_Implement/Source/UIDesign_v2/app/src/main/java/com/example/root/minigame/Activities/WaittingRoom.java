@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,9 +18,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
+import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 
 public class WaittingRoom extends AppCompatActivity {
@@ -29,6 +34,8 @@ public class WaittingRoom extends AppCompatActivity {
     TextView txt_p1Name, txt_p2Name;
     Player thisPlayer;
 
+
+
     private BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     private String mBTAdapterDefaultName;
 
@@ -37,6 +44,8 @@ public class WaittingRoom extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //StartingMenu.mConnection.StartConnection(mWaittingRoomHandler);
+        StartingMenu.mConnection.setHandle(mWaittingRoomHandler);
 
 
         Intent intent = getIntent();
@@ -113,6 +122,11 @@ public class WaittingRoom extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StartingMenu.mConnection.OnResume();
+    }
 
     @Override
     protected void onStop() {
@@ -137,4 +151,33 @@ public class WaittingRoom extends AppCompatActivity {
         // are available.
     }
 
+    private final Handler mWaittingRoomHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Messages.MESSAGE_STATE_CHANGE:
+                    if(msg.arg1 != BluetoothConnectionService.STATE_CONNECTED){
+                        Toast.makeText(WaittingRoom.this, "Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Messages.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    break;
+                case Messages.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Toast.makeText(getApplication(), "Doc " + readMessage, Toast.LENGTH_SHORT).show();
+                    break;
+                case Messages.MESSAGE_TOAST:
+
+                    Toast.makeText(getApplication(), msg.getData().getString(Messages.TOAST),
+                            Toast.LENGTH_SHORT).show();
+
+                    break;
+            }
+        }
+    };
 }

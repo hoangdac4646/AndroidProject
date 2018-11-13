@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
+import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 
 public class CreatingRoom extends AppCompatActivity {
@@ -43,6 +47,7 @@ public class CreatingRoom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
         Intent intent = getIntent();
 
         final Bundle bun = intent.getBundleExtra("bundle");
@@ -106,91 +111,98 @@ public class CreatingRoom extends AppCompatActivity {
             }
         });
 
-        btn_game1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (iv_game1Tick.getVisibility() == View.VISIBLE) {
-                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName());
+        if (thisPlayer.isHost())
+        {
+            btn_game1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (iv_game1Tick.getVisibility() == View.VISIBLE) {
+                        iv_game1Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName());
+                    } else {
+                        iv_game1Tick.setVisibility(View.VISIBLE);
+                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        iv_game3Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName() + "&" + "Caro");
+                    }
                 }
+            });
 
-                else {
-                    iv_game1Tick.setVisibility(View.VISIBLE);
-                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Caro");
+            btn_game2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (iv_game2Tick.getVisibility() == View.VISIBLE) {
+                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName());
+                    } else {
+                        iv_game2Tick.setVisibility(View.VISIBLE);
+                        iv_game1Tick.setVisibility(View.INVISIBLE);
+                        iv_game3Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName() + "&" + "Tàu chiến");
+                    }
                 }
-            }
-        });
+            });
 
-        btn_game2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (iv_game2Tick.getVisibility() == View.VISIBLE) {
-                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName());
+            btn_game3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (iv_game3Tick.getVisibility() == View.VISIBLE) {
+                        iv_game3Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName());
+                    } else {
+                        iv_game3Tick.setVisibility(View.VISIBLE);
+                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        iv_game1Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(thisPlayer.getPlayerName() + "&" + "Sudoku");
+                    }
                 }
-                else {
-                    iv_game2Tick.setVisibility(View.VISIBLE);
-                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Tàu chiến");
-                }
-            }
-        });
-
-        btn_game3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (iv_game3Tick.getVisibility() == View.VISIBLE) {
-                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName());
-                }
-                else {
-                    iv_game3Tick.setVisibility(View.VISIBLE);
-                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                    mBTAdapter.setName(thisPlayer.getPlayerName()+"&"+"Sudoku");
-                }
-            }
-        });
+            });
+        }
+        else
+        {
+            fl_p2Name.setVisibility(View.VISIBLE);
+        }
 
 
         btn_ready.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (thisPlayer.isHost()) {
+                    if (iv_p2Ready.getVisibility() == View.VISIBLE
+                            && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE || iv_game3Tick.getVisibility() == View.VISIBLE)) {
+                        iv_p1Ready.setVisibility(View.VISIBLE);
+                        btn_game1.setEnabled(false);
+                        btn_game2.setEnabled(false);
+                        btn_game3.setEnabled(false);
 
-                if (iv_p2Ready.getVisibility() == View.VISIBLE
-                        && (iv_game1Tick.getVisibility() == View.VISIBLE || iv_game2Tick.getVisibility() == View.VISIBLE || iv_game3Tick.getVisibility() == View.VISIBLE))
-                {
-                    iv_p1Ready.setVisibility(View.VISIBLE);
-                    btn_game1.setEnabled(false);
-                    btn_game2.setEnabled(false);
-                    btn_game3.setEnabled(false);
+                        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
-                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
-                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
-                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+                        Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_LONG).show();
+                        finish();
+                    } else if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
+                        Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
+                    else {
+                        iv_p1Ready.setVisibility(View.VISIBLE);
+                        btn_game1.setEnabled(false);
+                        btn_game2.setEnabled(false);
+                        btn_game3.setEnabled(false);
 
-                    Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_LONG).show();
-                    finish();
+                        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+
+                        Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
-                    Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
                 else
                 {
-                    iv_p1Ready.setVisibility(View.VISIBLE);
-                    btn_game1.setEnabled(false);
-                    btn_game2.setEnabled(false);
-                    btn_game3.setEnabled(false);
-
-                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
-                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
-                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
-
-                    Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
+                    iv_p2Ready.setVisibility(View.VISIBLE);
+                    StartingMenu.mConnection.sendMessage("Ready");
                 }
             }
+
         });
 
         btn_return.setOnClickListener(new View.OnClickListener() {
@@ -277,5 +289,44 @@ public class CreatingRoom extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
     }
+
+    private final Handler mCreatingRoomHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Messages.MESSAGE_STATE_CHANGE:
+                    if(msg.arg1 != BluetoothConnectionService.STATE_CONNECTED){
+                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
+                    }else
+                    {
+                        iv_p2Ready.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case Messages.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    break;
+                case Messages.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    if(readMessage.equals("Ready")){
+                        if(thisPlayer.isHost()){
+                            iv_p2Ready.setVisibility(View.VISIBLE);
+                        }
+                        else{
+                            iv_p1Ready.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    break;
+                case Messages.MESSAGE_TOAST:
+                    Toast.makeText(getApplication(), msg.getData().getString(Messages.TOAST),
+                            Toast.LENGTH_SHORT).show();
+
+                    break;
+            }
+        }
+    };
 
 }

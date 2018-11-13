@@ -42,4 +42,8 @@ public class Player {
     public boolean isHost() {
         return hostStatus;
     }
+
+    public void setHostStatus(boolean hostStatus) {
+        this.hostStatus = hostStatus;
+    }
 }
