@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.root.minigame.Activities.StartingMenu;
+import com.example.root.minigame.Classes.Player;
 
 import static android.view.Window.FEATURE_NO_TITLE;
 

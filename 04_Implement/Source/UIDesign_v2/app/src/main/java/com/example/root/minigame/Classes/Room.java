@@ -1,4 +1,4 @@
-package com.example.root.minigame;
+package com.example.root.minigame.Classes;
 
 public class Room {
     private String hostName;

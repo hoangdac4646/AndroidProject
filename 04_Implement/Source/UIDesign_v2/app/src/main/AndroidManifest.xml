@@ -31,6 +31,10 @@
         <activity android:name=".Activities.StartingMenu"></activity>
         <activity android:name=".Activities.CreatingRoom"></activity>
         <activity android:name=".Activities.FindingRoom"></activity>
+        <activity android:name=".BattleShip.BattleShipPreActivity"
+            android:screenOrientation="landscape"></activity>
+        <activity android:name=".BattleShip.BattleShipGameActivity"
+            android:screenOrientation="landscape"></activity>
         <activity android:name=".Caro.ActivityCaRo"
             android:screenOrientation="landscape">
             </activity>

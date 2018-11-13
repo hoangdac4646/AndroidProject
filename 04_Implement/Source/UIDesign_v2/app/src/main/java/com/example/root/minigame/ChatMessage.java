@@ -1,5 +1,7 @@
 package com.example.root.minigame;
 
+import com.example.root.minigame.Classes.Player;
+
 public class ChatMessage {
     private Player player;
     private String message;

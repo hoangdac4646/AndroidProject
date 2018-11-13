@@ -33,22 +33,14 @@ public class BluetoothConnection {
         mBTconnection.connect(device);
     }
 
-    public void Onpause(){
-
-    }
 
     public int sendMessage(String message) {
-        // Check that we're actually connected before trying anything
         if (mBTconnection.getState() != BluetoothConnectionService.STATE_CONNECTED) {
             return -1;
         }
-
-        // Check that there's actually something to send
         if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
             mBTconnection.write(send);
-            // Reset out string buffer to zero and clear the edit text field
         }
         return 0;
     }
@@ -56,7 +48,6 @@ public class BluetoothConnection {
     public void OnResume(){
         if(mBTconnection != null){
             if (mBTconnection.getState() == BluetoothConnectionService.STATE_NONE) {
-                // Start the Bluetooth chat services
                 mBTconnection.start();
             }
         }

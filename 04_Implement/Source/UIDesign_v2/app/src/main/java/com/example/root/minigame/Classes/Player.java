@@ -1,4 +1,6 @@
-package com.example.root.minigame;
+package com.example.root.minigame.Classes;
+
+import com.example.root.minigame.R;
 
 public class Player {
     private String playerName;

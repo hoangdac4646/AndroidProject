@@ -28,9 +28,8 @@ import android.widget.Toast;
 import com.example.root.minigame.CustomListAdapter;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
-import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
-import com.example.root.minigame.Room;
+import com.example.root.minigame.Classes.Room;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 import java.util.ArrayList;

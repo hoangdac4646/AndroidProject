@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,10 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.minigame.BattleShip.BattleShipPreActivity;
 import com.example.root.minigame.Caro.ActivityCaRo;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
-import com.example.root.minigame.Player;
+import com.example.root.minigame.Classes.Player;
 import com.example.root.minigame.R;
 import com.example.root.minigame.mBluetooth.Adapter_listview;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
@@ -157,6 +159,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     if (iv_game2Tick.getVisibility() == View.VISIBLE) {
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -198,6 +201,8 @@ public class CreatingRoom extends AppCompatActivity {
         btn_ready.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ready_check_no_focus);
+                mp.start();
                 if (Main.thisPlayer.isHost()) {
                     if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
                     {
@@ -250,7 +255,14 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
+
+        if(iv_game1Tick.getVisibility() == View.VISIBLE){
+            startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
+        }else if(iv_game2Tick.getVisibility() == View.VISIBLE){
+            startActivity(new Intent(getApplicationContext(), BattleShipPreActivity.class));
+        }else if(iv_game3Tick.getVisibility() == View.VISIBLE){
+
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

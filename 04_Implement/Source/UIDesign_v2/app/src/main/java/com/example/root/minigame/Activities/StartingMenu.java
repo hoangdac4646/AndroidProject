@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.root.minigame.Main;
-import com.example.root.minigame.Player;
 import com.example.root.minigame.R;
 import com.example.root.minigame.mBluetooth.BluetoothConnection;
 
