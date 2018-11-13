@@ -236,31 +236,33 @@ public class FindingRoom extends AppCompatActivity {
                 if(device.getBondState() == BluetoothDevice.BOND_BONDED || device.getBondState() == BluetoothDevice.BOND_NONE){
                     //list devices paired
                     mDevices.add(device);
-                    String [] dName = device.getName().split("&");
-                    if (dName != null && !dName[0].equals("")) {
-                        if (dName.length < 2)
-                            Names.add(new Room(R.drawable.logo_normal, dName[0], "N/A"));
-                        else
-                        {
-                            switch (dName[1]) {
-                                case "Caro":
-                                    Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
-                                    break;
-                                case "Sudoku":
-                                    Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
-                                    break;
-                                default:
-                                    Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
-                                    break;
+                    if(device.getName() != "" && device.getName() != null){
+                        String [] dName = device.getName().split("&");
+                        if (dName != null && !dName[0].equals("")) {
+                            if (dName.length < 2)
+                                Names.add(new Room(R.drawable.logo_normal, dName[0], "N/A"));
+                            else
+                            {
+                                switch (dName[1]) {
+                                    case "Caro":
+                                        Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
+                                        break;
+                                    case "Sudoku":
+                                        Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
+                                        break;
+                                    default:
+                                        Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
+                                        break;
+                                }
                             }
+                            DeviceList.setAdapter(new CustomListAdapter(FindingRoom.this, Names));
                         }
-                        DeviceList.setAdapter(new CustomListAdapter(FindingRoom.this, Names));
                     }
+
                 }
             }
         }
     };
-
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
