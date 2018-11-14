@@ -1,5 +1,6 @@
 package com.example.root.minigame.BattleShip;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -15,19 +16,17 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
-import com.example.root.minigame.Activities.CreatingRoom;
 import com.example.root.minigame.Activities.StartingMenu;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.R;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
-import com.example.root.minigame.mBluetooth.GuiTinNhan;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class BattleShipGameActivity extends AppCompatActivity implements View.OnClickListener {
-    static TableLayout map_bs1, map_bs2;
+    private TableLayout map_bs1, map_bs2;
 
     int[] ship4 = {R.drawable.s1_1, R.drawable.s1_2, R.drawable.s1_3, R.drawable.s1_4};
     int[] ship4_land = {R.drawable.s1_1_land, R.drawable.s1_2_land, R.drawable.s1_3_land, R.drawable.s1_4_land};
@@ -60,8 +59,16 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
 
     int MAX_ROW = 10, MAX_COL = 10;
 
-    ArrayList<BattleShipPreActivity.Ship> shipMap1 = BattleShipPreActivity.shipMap;// cai mang thuyen
-    ArrayList<BattleShipPreActivity.Ship> shipMap = new ArrayList<>();
+    boolean cont = false;//kiem tra tiep tuc danh neu danh trung
+
+    int countFiredShip = 0;
+    int MAX_SHIP = 10;
+    boolean turn = false;
+
+    boolean[] isClick = new boolean[100];
+
+    ArrayList<Ship> shipMap1 = new ArrayList<>();// cai mang thuyen
+    ArrayList<Ship> shipMap2 = new ArrayList<>();
     ArrayList<Integer> isFire = new ArrayList<>();
 
     @Override
@@ -69,12 +76,23 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_game_battleship);
-        StartingMenu.mConnection.setHandle(mShipBattleHandler);
-        String temp = ParseArrayToString(shipMap1);
-        if(StartingMenu.mConnection.sendMessage(temp) == -1){
-            Toast.makeText(this, "Ship: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
-        }
         AnhXa();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("Bundle");
+        shipMap1 = (ArrayList<Ship>) bundle.getSerializable("shipmap");
+        if(StartingMenu.mConnection != null){
+            StartingMenu.mConnection.setHandle(mShipBattleHandler);
+            String temp = ParseArrayToString(shipMap1);
+            StartingMenu.mConnection.sendMessage(temp);
+        }
+        else{
+            Toast.makeText(this, Messages.NO_CONNECTION, Toast.LENGTH_LONG).show();
+        }
+        //
+        if(Main.thisPlayer.isHost()){
+            turn = true;
+        }
+
         InitMaps();
         ShowShip();
         SetOnClick();
@@ -109,27 +127,48 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                 mbutton.setId(i * MAX_ROW + j);
                 row.addView(mbutton);
                 mbutton.setBackground(null);
-                final Button mbutton1 = new Button(this);
-                mbutton1.setLayoutParams(new TableRow.LayoutParams(50, 50));
-                mbutton1.setId(i * MAX_ROW + j + 100);
-                row1.addView(mbutton1);
-                mbutton1.setBackground(null);
-                mbutton1.setOnClickListener(new View.OnClickListener() {
+                final Button mbutton2 = new Button(this);
+                mbutton2.setLayoutParams(new TableRow.LayoutParams(50, 50));
+                mbutton2.setId(i * MAX_ROW + j + 100);
+                row1.addView(mbutton2);
+                mbutton2.setBackground(null);
+                mbutton2.setOnClickListener(new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                     @Override
                     public void onClick(View v) {
 
-                        StartingMenu.mConnection.sendMessage(mbutton1.getId()+"");
-                        if (selection == 0){
-                            SetBackgroundButton(mbutton1);
+                        StartingMenu.mConnection.sendMessage(mbutton2.getId()+"");
+                        if(turn == true){
+                            if(isClick[mbutton2.getId() - MAX_ROW*MAX_COL] == false){//kiem tra da click chua
+                                cont = false;
+
+                                if (selection == 0){
+                                    SetBackgroundButton(map_bs2, shipMap2, mbutton2);
+                                }
+                                else if(selection == 1) {
+                                    SetBombType(map_bs2, shipMap2, mbutton2);
+                                    selection = 0;//sau khi dung bomb thi dung lai sung thuong
+                                }
+                                else if(selection == 2){
+                                    SetRadaType(mbutton2);
+                                    selection = 0;
+                                }
+
+                                if (cont == false) {//danh sai thi doi luot
+                                    turn = false;
+                                }
+                                else{//danh dung thi danh tiep
+                                    turn = true;
+                                }
+
+                                isClick[mbutton2.getId() - MAX_ROW*MAX_COL] = true;//
+                            }
+                            else{
+                                Toast.makeText(BattleShipGameActivity.this, "Vi tri da ban", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        else if(selection == 1) {
-                            SetBombType(mbutton1);
-                            selection = 0;//sau khi dung bomb thi dung lai sung thuong
-                        }
-                        else if(selection == 2){
-                            SetRadaType(mbutton1);
-                            selection = 0;
+                        else{
+                            Toast.makeText(BattleShipGameActivity.this, "Chua toi luot ban danh", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -213,12 +252,9 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         }
     }
 
-    public void AddShipFromGet(){
+    private boolean CheckShipIsFire(Ship ship) {
+        int len = 0;//bien dem so luong phan tau da no
 
-    }
-
-    private boolean CheckShipIsFire(BattleShipPreActivity.Ship ship) {//tàu, kiểm tra tàu nổ chưa để lan ra
-        int len = 0;
         for (int i = 0; i < ship.getLen(); i++) {//kiem tra tat cac toa do cua thuyen
             if (ship.getOrien()) {
                 for (int j = 0; j < isFire.size(); j++) {
@@ -242,9 +278,9 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         return false;
     }
 
-    private void SetAroundShip(BattleShipPreActivity.Ship ship) {
-        int num_Row = ship.getIndex() / 10;
-        int num_Col = ship.getIndex() % 10;
+    private void SetAroundShip(TableLayout map_bs, Ship ship) {
+        int num_Row = ship.getIndex() / MAX_ROW;
+        int num_Col = ship.getIndex() % MAX_COL;
 
         if (ship.getOrien()) {
             for (int i = -1; i <= 1; i++) {
@@ -252,7 +288,7 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                     continue;
                 }
 
-                TableRow Around_row = (TableRow) map_bs1.getChildAt(num_Row + i);
+                TableRow Around_row = (TableRow) map_bs.getChildAt(num_Row + i);
 
                 for (int j = -1; j <= ship.getLen(); j++) {
                     if (num_Col + j < 0 || num_Col + j >= MAX_COL) {//kiem tra cot co trong ban do hay ko
@@ -263,10 +299,13 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                         Button mButton = (Button) Around_row.getChildAt(num_Col + j);
 
                         mButton.setBackgroundResource(R.color.black_overlay);
+                        isClick[mButton.getId() - MAX_ROW*MAX_COL] = true;//set da click
+
                     } else if (i != 0) {
                         Button mButton = (Button) Around_row.getChildAt(num_Col + j);
 
                         mButton.setBackgroundResource(R.color.black_overlay);
+                        isClick[mButton.getId() - MAX_ROW*MAX_COL] = true;//set da click
                     }
 
                 }
@@ -277,7 +316,7 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                     continue;
                 }
 
-                TableRow Around_row = (TableRow) map_bs1.getChildAt(num_Row + i);
+                TableRow Around_row = (TableRow) map_bs.getChildAt(num_Row + i);
 
                 for (int j = -1; j <= 1; j++) {
                     if (num_Col + j < 0 || num_Col + j >= MAX_COL) {//kiem tra cot co trong ban do hay ko
@@ -288,27 +327,33 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                         Button mButton = (Button) Around_row.getChildAt(num_Col + j);
 
                         mButton.setBackgroundResource(R.color.black_overlay);
+                        isClick[mButton.getId() - MAX_ROW*MAX_COL] = true;//set da click
                     } else if (j != 0) {
                         Button mButton = (Button) Around_row.getChildAt(num_Col + j);
 
                         mButton.setBackgroundResource(R.color.black_overlay);
+                        isClick[mButton.getId() - MAX_ROW*MAX_COL] = true;//set da click
                     }
                 }
             }
         }
     }
 
-    private void SetBombType(Button mbutton) {
+    private void SetBombType(TableLayout map_bs, ArrayList<Ship> shipMap, Button mbutton) {
         int index = mbutton.getId();
         int row = index / MAX_COL;
         int col = index % MAX_ROW;
+
+        if(row >= MAX_ROW){//truong hop id cua button qua 100
+            row -= MAX_ROW;
+        }
 
         for (int i = -1; i <= 1; i++) {
             if (row + i < 0 || row + i >= MAX_ROW) {//kiem tra vi tri co trong ban do hay ko
                 continue;
             }
 
-            TableRow Row = (TableRow) map_bs1.getChildAt(row + i);
+            TableRow Row = (TableRow) map_bs.getChildAt(row + i);
 
             for (int j = -1; j <= 1; j++) {
                 if (col + j < 0 || col + j >= MAX_COL) {//kiem tra vi tri co trong  ban do hay ko
@@ -321,7 +366,8 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
 
                 mbutton = (Button) Row.getChildAt(col + j);
 
-                SetBackgroundButton(mbutton);
+                SetBackgroundButton(map_bs, shipMap, mbutton);
+                isClick[mbutton.getId()] = true;
             }
         }
     }
@@ -372,58 +418,111 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
 
     }
 
-    private void SetBackgroundButton(Button mbutton) {
+    private void ShowFiredShip(TableLayout map_bs, Ship ship){
+        int row = ship.getIndex() / MAX_ROW;
+        int col = ship.getIndex() % MAX_COL;
+
+        if(row >= MAX_ROW){
+            row -= MAX_ROW;
+        }
+
+        if (ship.getOrien()){
+            TableRow Row = (TableRow) map_bs.getChildAt(row);
+
+            for (int i = 0; i < ship.getLen(); i++){
+                Button mbutton = (Button) Row.getChildAt(col + i);
+
+                switch (ship.getLen()) {
+                    case 4:
+                        mbutton.setBackgroundResource(drawble_ship4[i]);
+                        break;
+                    case 3:
+                        mbutton.setBackgroundResource(drawable_ship3[i]);
+                        break;
+                    case 2:
+                        mbutton.setBackgroundResource(drawable_ship2[i]);
+                        break;
+                    case 1:
+                        mbutton.setBackgroundResource(drawable_ship1[i]);
+                        break;
+                }
+            }
+        }
+        else{
+            for (int i = 0; i < ship.getLen(); i++){
+                TableRow Row = (TableRow) map_bs.getChildAt(row + i);
+                Button mbutton = (Button) Row.getChildAt(col);
+
+                switch (ship.getLen()) {
+                    case 4:
+                        mbutton.setBackgroundResource(drawable_ship4_land[i]);
+                        break;
+                    case 3:
+                        mbutton.setBackgroundResource(drawable_ship3_land[i]);
+                        break;
+                    case 2:
+                        mbutton.setBackgroundResource(drawable_ship2_land[i]);
+                        break;
+                    case 1:
+                        mbutton.setBackgroundResource(drawable_ship1_land[i]);
+                        break;
+                }
+
+            }
+        }
+
+    }
+
+    private void SetBackgroundButton(TableLayout map_bs, ArrayList<Ship> shipMap, Button mbutton) {
         boolean isShip = false;
 
-        for (int i = 0; i < shipMap1.size(); i++) {//kiem tra id cac thuyen
-            for (int j = 0; j < shipMap1.get(i).getLen(); j++) {//kiem tra id cua thuyen
-                if (shipMap1.get(i).getOrien()) {//neu tau nam ngang
-                    if (mbutton.getId() == shipMap1.get(i).getIndex() + j) {
+        for (int i = 0; i < shipMap.size(); i++) {//kiem tra id cac thuyen
+            for (int j = 0; j < shipMap.get(i).getLen(); j++) {//kiem tra id cua thuyen da chon
+                if (shipMap.get(i).getOrien()) {//neu tau nam ngang
+                    if (mbutton.getId() == shipMap.get(i).getIndex() + j) {
                         isFire.add(mbutton.getId());
 
-                        switch (shipMap1.get(i).getLen()) {
-                            case 4:
-                                mbutton.setBackgroundResource(drawble_ship4[j]);
-                                break;
-                            case 3:
-                                mbutton.setBackgroundResource(drawable_ship3[j]);
-                                break;
-                            case 2:
-                                mbutton.setBackgroundResource(drawable_ship2[j]);
-                                break;
-                            case 1:
-                                mbutton.setBackgroundResource(drawable_ship1[j]);
-                                break;
-                        }
+                        mbutton.setBackgroundResource(R.drawable.drawable_dau_x);
+                        cont = true;//danh trung thi danh tiep
 
-                        if (CheckShipIsFire(shipMap1.get(i))) {
-                            SetAroundShip(shipMap1.get(i));
+                        if (CheckShipIsFire(shipMap.get(i))) {
+                            ShowFiredShip(map_bs, shipMap.get(i));
+                            SetAroundShip(map_bs, shipMap.get(i));
+                            countFiredShip++;
+
+                            if(countFiredShip == MAX_SHIP){
+                                if(turn == true){//neu ben phan dang danh
+                                    Toast.makeText(this, "Ben phai thang", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    Toast.makeText(this, "Ben trai thang", Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
 
                         isShip = true;
                         break;
                     }
                 } else {
-                    if (mbutton.getId() == shipMap1.get(i).getIndex() + j * MAX_ROW) {
+                    if (mbutton.getId() == shipMap.get(i).getIndex() + j * MAX_ROW) {
                         isFire.add(mbutton.getId());
 
-                        switch (shipMap1.get(i).getLen()) {
-                            case 4:
-                                mbutton.setBackgroundResource(drawable_ship4_land[j]);
-                                break;
-                            case 3:
-                                mbutton.setBackgroundResource(drawable_ship3_land[j]);
-                                break;
-                            case 2:
-                                mbutton.setBackgroundResource(drawable_ship2_land[j]);
-                                break;
-                            case 1:
-                                mbutton.setBackgroundResource(drawable_ship1_land[j]);
-                                break;
-                        }
+                        mbutton.setBackgroundResource(R.drawable.drawable_dau_x);
+                        cont = true;//danh trung thi danh tiep
 
-                        if (CheckShipIsFire(shipMap1.get(i))) {
-                            SetAroundShip(shipMap1.get(i));
+                        if (CheckShipIsFire(shipMap.get(i))) {
+                            ShowFiredShip(map_bs, shipMap.get(i));
+                            SetAroundShip(map_bs, shipMap.get(i));
+                            countFiredShip++;
+
+                            if(countFiredShip == MAX_SHIP){
+                                if(turn == true){//neu ben trai dang danh
+                                    Toast.makeText(this, "Ben phai thang", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    Toast.makeText(this, "Ben trai thang", Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
 
                         isShip = true;
@@ -440,60 +539,15 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         }
     }
 
-    private final Handler mShipBattleHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Messages.MESSAGE_STATE_CHANGE:
-                    if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
-                        Toast.makeText(getApplication(), "Ship: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case Messages.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    //setbackgroud//um//dunnog roi
-                    String writeMessage = new String(writeBuf);
-                    try{
-                        int index = Integer.parseInt(String.valueOf(writeMessage));
-                        int num_Row = index / MAX_ROW;
-                        int num_Col = index - num_Row * MAX_ROW;
-                        TableRow Check_row = (TableRow) map_bs2.getChildAt(num_Row);
-                        Button check_mButton = (Button) Check_row.getChildAt(num_Col);
-                        SetBackgroundButton(check_mButton);
-                    }catch (NumberFormatException e){
+    public void Attack(TableLayout map, int index , ArrayList<Ship> ships) {
+        int num_Row = index / MAX_ROW;
+        int num_Col = index - num_Row * MAX_ROW;
+        TableRow Check_row = (TableRow) map.getChildAt(num_Row);
+        Button check_mButton = (Button) Check_row.getChildAt(num_Col);
+        SetBackgroundButton(map, ships, check_mButton);
+    }
 
-                    }
-                    break;
-                case Messages.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    try{
-                        int index = Integer.parseInt(String.valueOf(readMessage));
-                        int num_Row = index / MAX_ROW;
-                        int num_Col = index - num_Row * MAX_ROW;
-                        TableRow Check_row = (TableRow) map_bs1.getChildAt(num_Row);
-                        Button check_mButton = (Button) Check_row.getChildAt(num_Col);
-                        SetBackgroundButton(check_mButton);
-
-                    }catch (NumberFormatException e){
-                        shipMap = ParseStringToArray(readMessage);
-                        //CheckShipIsFire(shipMap);
-                    }
-                    break;
-                case Messages.MESSAGE_DEVICE_NAME:
-                    break;
-
-                case Messages.MESSAGE_TOAST:
-                    Toast.makeText(getApplication(), msg.getData().getString(Messages.TOAST),
-                            Toast.LENGTH_SHORT).show();
-
-                    break;
-            }
-        }
-    };
-
-    public String ParseArrayToString(ArrayList<BattleShipPreActivity.Ship> shipMap){
+    public String ParseArrayToString(ArrayList<Ship> shipMap){
         String line = "";
 
         for (int i = 0; i < shipMap.size(); i++){
@@ -513,33 +567,88 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         }
         return line;
     }
-    public ArrayList<BattleShipPreActivity.Ship> ParseStringToArray(String line){
-        ArrayList<BattleShipPreActivity.Ship> shipMap = new ArrayList<>();
+    public ArrayList<Ship> ParseStringToArray(String line){
+        ArrayList<Ship> shipMap = new ArrayList<>();
 
         StringTokenizer tokens = new StringTokenizer(line, ";");
 
         for (int i = 0; i < tokens.countTokens(); i++){
             String token = tokens.nextToken();
             StringTokenizer elements = new StringTokenizer(token, ",");
-            BattleShipPreActivity.Ship tmp = new BattleShipPreActivity.Ship();
+            try{
+                String element = elements.nextToken();
+                int index = Integer.parseInt(element);
 
-            String element = elements.nextToken();
-            tmp.setIndex(Integer.parseInt(element));
+                element = elements.nextToken();
+                int len = (Integer.parseInt(element));
 
-            element = elements.nextToken();
-            tmp.setLen(Integer.parseInt(element));
+                element = elements.nextToken();
+                boolean orien = false;
+                if(Integer.parseInt(element) != 0) {
+                    orien = true;
+                }
+                Ship tmp = new Ship(index, len , orien);
+                shipMap.add(tmp);
 
-            element = elements.nextToken();
-            if(Integer.parseInt(element) == 0){
-                tmp.setOrien(false);
+            }catch (NumberFormatException e){
+
             }
-            else{
-                tmp.setOrien(true);
-            }
-
-            shipMap.add(tmp);
         }
 
         return shipMap;
     }
+
+    private final Handler mShipBattleHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Messages.MESSAGE_STATE_CHANGE:
+                    if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
+                        Toast.makeText(getApplication(), "Ship: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Messages.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    String writeMessage = new String(writeBuf);
+                    try{
+                        int index = Integer.parseInt(String.valueOf(writeMessage));//neu parce dc sẽ là vi trí dánh
+                        Attack(map_bs2, index , shipMap2);
+                        turn = false;
+
+                    }catch (NumberFormatException e){
+                    }
+                    break;
+                case Messages.MESSAGE_READ:
+                    Toast.makeText(BattleShipGameActivity.this, "Ship: Readding data...", Toast.LENGTH_SHORT).show();
+                    byte[] readBuf = (byte[]) msg.obj;
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    try{
+                        int index = Integer.parseInt(String.valueOf(readMessage));
+                        Attack(map_bs1, index , shipMap1);
+
+                    }catch (NumberFormatException e){
+                        if(readMessage.charAt(0) == 'M')
+                        {
+                            String temp = readMessage.substring(1);
+                            shipMap2 = ParseStringToArray(temp);
+                            if(shipMap2.size() == 0){
+                                Toast.makeText(BattleShipGameActivity.this, Messages.Error_Mes, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                    turn = true;
+                    break;
+                case Messages.MESSAGE_DEVICE_NAME:
+                    break;
+
+                case Messages.MESSAGE_TOAST:
+                    Toast.makeText(getApplication(), msg.getData().getString(Messages.TOAST),
+                            Toast.LENGTH_SHORT).show();
+
+                    break;
+            }
+        }
+    };
+
+
 }

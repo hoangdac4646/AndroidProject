@@ -3,4 +3,36 @@
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <integer-array name="ship1_array">
+        <item>@drawable/s1_1</item>
+        <item>@drawable/s1_2</item>
+        <item>@drawable/s1_3</item>
+        <item>@drawable/s1_4</item>
+    </integer-array>
+    <integer-array name="ship1_array_land">
+        <item>@drawable/s1_1_land</item>
+        <item>@drawable/s1_2_land</item>
+        <item>@drawable/s1_3_land</item>
+        <item>@drawable/s1_4_land</item>
+    </integer-array>
+    <integer-array name="ship2_array">
+        <item>@drawable/ship_2_1</item>
+        <item>@drawable/ship_2_2</item>
+        <item>@drawable/ship_2_3</item>
+    </integer-array>
+    <integer-array name="ship2_array_land">
+        <item>@drawable/ship_2_1_land</item>
+        <item>@drawable/ship_2_2_land</item>
+        <item>@drawable/ship_2_3_land</item>
+    </integer-array>
+    <integer-array name="ship3_array">
+        <item>@drawable/s4_1</item>
+        <item>@drawable/s4_2</item>
+    </integer-array>
+    <integer-array name="ship3_array_land">
+        <item>@drawable/s4_1_land</item>
+        <item>@drawable/s4_2_land</item>
+    </integer-array>
+
 </resources>

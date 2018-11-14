@@ -13,4 +13,6 @@ public interface Messages {
 
     String TOAST = "toast";
     String DEVICE_NAME = "nameofdevice";
+    String NO_CONNECTION = "Không có kết nối!";
+    String Error_Mes        = "Lỗi trong quá trình truyền";
 }

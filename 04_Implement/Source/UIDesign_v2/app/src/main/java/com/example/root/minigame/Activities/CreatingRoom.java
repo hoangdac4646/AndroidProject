@@ -49,6 +49,8 @@ public class CreatingRoom extends AppCompatActivity {
     ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
     FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3;
     TextView txt_p1Name, txt_p2Name;
+    boolean iscarocheck = false;
+    MediaPlayer mp_button;
 
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
@@ -77,6 +79,7 @@ public class CreatingRoom extends AppCompatActivity {
         listView_chat.setAdapter(adapter_listview);
         adapter_listview.notifyDataSetChanged();
         NoiDung = findViewById(R.id.edt_CreateContent);
+        mp_button = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
         btn_guiTinNhan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,9 +132,10 @@ public class CreatingRoom extends AppCompatActivity {
 
 
         btn_setting.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
+                mp_button.start();
             }
         });
 
@@ -142,6 +146,8 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mp_button.start();
+                    iscarocheck = true;
                     if (iv_game1Tick.getVisibility() == View.VISIBLE) {
                         iv_game1Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -159,7 +165,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    iscarocheck = false;
                     if (iv_game2Tick.getVisibility() == View.VISIBLE) {
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -177,6 +183,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    iscarocheck = false;
                     if (iv_game3Tick.getVisibility() == View.VISIBLE) {
                         iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName());
@@ -213,7 +220,6 @@ public class CreatingRoom extends AppCompatActivity {
                 } else {
                     iv_p2Ready.setVisibility(View.VISIBLE);
                 }
-
                 if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
                     StartingMenu.mConnection.sendMessage("Start");
                     StartingGame();
@@ -256,13 +262,7 @@ public class CreatingRoom extends AppCompatActivity {
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
 
-        if(iv_game1Tick.getVisibility() == View.VISIBLE){
-            startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
-        }else if(iv_game2Tick.getVisibility() == View.VISIBLE){
-            startActivity(new Intent(getApplicationContext(), BattleShipPreActivity.class));
-        }else if(iv_game3Tick.getVisibility() == View.VISIBLE){
 
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
