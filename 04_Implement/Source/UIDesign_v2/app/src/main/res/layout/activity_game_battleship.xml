@@ -48,6 +48,7 @@
                 android:layout_weight="1">
 
                 <TextView
+                    android:gravity="center"
                     android:id="@+id/txt_p1Name"
                     android:layout_width="84dp"
                     android:layout_height="wrap_content"
@@ -183,6 +184,7 @@
                 android:layout_weight="1">
 
                 <TextView
+                    android:gravity="center"
                     android:id="@+id/txt_p2Name"
                     android:layout_width="85dp"
                     android:layout_height="wrap_content"

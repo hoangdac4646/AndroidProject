@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,7 +54,8 @@ public class StartingMenu extends AppCompatActivity {
         btn_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
+                mp.start();
             }
         });
 
@@ -62,7 +64,8 @@ public class StartingMenu extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
-
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
+                mp.start();
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
                 startActivityForResult(discoverableIntent, REQUEST_CODE_DISCOVERABLE);
@@ -75,6 +78,8 @@ public class StartingMenu extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
+                mp.start();
                 Main.thisPlayer.setHostStatus(false);
                 Intent intent =  new Intent(StartingMenu.this,FindingRoom.class);
                 startActivity(intent);

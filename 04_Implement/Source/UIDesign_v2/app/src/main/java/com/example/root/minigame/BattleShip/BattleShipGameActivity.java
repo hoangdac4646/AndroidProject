@@ -1,6 +1,7 @@
 package com.example.root.minigame.BattleShip;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -28,17 +29,10 @@ import java.util.StringTokenizer;
 public class BattleShipGameActivity extends AppCompatActivity implements View.OnClickListener {
     private TableLayout map_bs1, map_bs2;
 
-    int[] ship4 = {R.drawable.s1_1, R.drawable.s1_2, R.drawable.s1_3, R.drawable.s1_4};
-    int[] ship4_land = {R.drawable.s1_1_land, R.drawable.s1_2_land, R.drawable.s1_3_land, R.drawable.s1_4_land};
+    TypedArray Ship4, ship4_land , ship3 , ship3_land , ship2 , ship2_land;
+    int ship1 = R.drawable.s3;
+    int ship1_land = R.drawable.s3_land;
 
-    int[] ship3 = {R.drawable.ship_2_1, R.drawable.ship_2_2, R.drawable.ship_2_3};
-    int[] ship3_land = {R.drawable.ship_2_1_land, R.drawable.ship_2_2_land, R.drawable.ship_2_3_land};
-
-    int[] ship2 = {R.drawable.s4_1, R.drawable.s4_2};
-    int[] ship2_land = {R.drawable.s4_1_land, R.drawable.s4_2_land};
-
-    int[] ship1 = {R.drawable.s3};
-    int[] ship1_land = {R.drawable.s3_land};
 
     int[] drawble_ship4 = {R.drawable.drawable_s1_1, R.drawable.drawable_s1_2, R.drawable.drawable_s1_3, R.drawable.drawable_s1_4};
     int[] drawable_ship4_land = {R.drawable.drawable_s1_1_land, R.drawable.drawable_s1_2_land, R.drawable.drawable_s1_3_land, R.drawable.drawable_s1_4_land};
@@ -86,7 +80,7 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
             StartingMenu.mConnection.sendMessage(temp);
         }
         else{
-            Toast.makeText(this, Messages.NO_CONNECTION, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), Messages.NO_CONNECTION, Toast.LENGTH_LONG).show();
         }
         //
         if(Main.thisPlayer.isHost()){
@@ -105,6 +99,14 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
         btnBomb = findViewById(R.id.btnBomb);
         btnRada = findViewById(R.id.btnRada);
         //btnPause = findViewById(R.id.btnPause);
+
+        Ship4 = getResources().obtainTypedArray(R.array.ship4_array);
+        ship4_land = getResources().obtainTypedArray(R.array.ship4_array_land);
+        ship3 = getResources().obtainTypedArray(R.array.ship3_array);
+        ship3_land = getResources().obtainTypedArray(R.array.ship3_array_land);
+        ship2 = getResources().obtainTypedArray(R.array.ship2_array);
+        ship2_land = getResources().obtainTypedArray(R.array.ship2_array_land);
+
     }
 
     private void SetOnClick(){
@@ -191,16 +193,16 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                     //ischecked.add(mButton.getId());
                     switch (shipMap1.get(i).getLen()) {
                         case 4:
-                            mButton.setBackgroundResource(ship4[k]);
+                            mButton.setBackground(Ship4.getDrawable(k));
                             continue;
                         case 3:
-                            mButton.setBackgroundResource(ship3[k]);
+                            mButton.setBackground(ship3.getDrawable(k));
                             continue;
                         case 2:
-                            mButton.setBackgroundResource(ship2[k]);
+                            mButton.setBackground(ship2.getDrawable(k));
                             continue;
                         case 1:
-                            mButton.setBackgroundResource(ship1[k]);
+                            mButton.setBackgroundResource(ship1);
                             continue;
                     }
                 }
@@ -211,16 +213,16 @@ public class BattleShipGameActivity extends AppCompatActivity implements View.On
                     //ischecked.add(mButton.getId());
                     switch (shipMap1.get(i).getLen()) {
                         case 4:
-                            mButton.setBackgroundResource(ship4_land[k]);
+                            mButton.setBackground(ship4_land.getDrawable(k));
                             continue;
                         case 3:
-                            mButton.setBackgroundResource(ship3_land[k]);
+                            mButton.setBackground(ship3_land.getDrawable(k));
                             continue;
                         case 2:
-                            mButton.setBackgroundResource(ship2_land[k]);
+                            mButton.setBackground(ship2_land.getDrawable(k));
                             continue;
                         case 1:
-                            mButton.setBackgroundResource(ship1_land[k]);
+                            mButton.setBackgroundResource(ship1_land);
                             continue;
                     }
                 }

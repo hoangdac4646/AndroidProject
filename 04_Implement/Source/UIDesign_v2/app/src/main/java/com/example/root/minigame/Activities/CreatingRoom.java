@@ -129,6 +129,20 @@ public class CreatingRoom extends AppCompatActivity {
 
         fl_p1Name.setVisibility(View.VISIBLE);
         fl_p2Name.setVisibility(View.INVISIBLE);
+        btn_game1.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
+                return true;
+            }
+        });
+        btn_game2.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                startActivity(new Intent(getApplicationContext(), BattleShipPreActivity.class));
+                return true;
+            }
+        });
 
 
         btn_setting.setOnClickListener(new View.OnClickListener() {

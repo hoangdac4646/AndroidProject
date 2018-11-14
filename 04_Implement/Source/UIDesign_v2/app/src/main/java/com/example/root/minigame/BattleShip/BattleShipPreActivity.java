@@ -25,6 +25,7 @@ import com.example.root.minigame.Activities.StartingMenu;
 import com.example.root.minigame.BattleShip.BattleShipGameActivity;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.R;
+import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -37,20 +38,11 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
     boolean Ship_Orien = true; // landscap
 
 
-    int[] ship4 = {R.drawable.s1_1,R.drawable.s1_2, R.drawable.s1_3, R.drawable.s1_4};
-    int[] ship4_land = {R.drawable.s1_1_land,R.drawable.s1_2_land, R.drawable.s1_3_land, R.drawable.s1_4_land};
-
-    int[] ship3 = {R.drawable.ship_2_1, R.drawable.ship_2_2, R.drawable.ship_2_3};
-    int[] ship3_land = {R.drawable.ship_2_1_land, R.drawable.ship_2_2_land, R.drawable.ship_2_3_land};
-
-    int[] ship2 = {R.drawable.s4_1,R.drawable.s4_2};
-    int[] ship2_land = {R.drawable.s4_1_land,R.drawable.s4_2_land};
-
-    int[] ship1 = {R.drawable.s3};
-    int[] ship1_land = {R.drawable.s3_land};
+    TypedArray Ship4, ship4_land , ship3 , ship3_land , ship2 , ship2_land;
+    int ship1 = R.drawable.s3;
+    int ship1_land = R.drawable.s3_land;
     int Clicking = 0;
 
-    MediaPlayer mediaPlayer;
 
     ArrayList<Integer> ischecked = new ArrayList<>();
     Animation animation;
@@ -68,7 +60,7 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
             StartingMenu.mConnection.setHandle(mPreBTHandler);
         }
         else{
-            Toast.makeText(this, "Máy Bạn Không có kết nối", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Máy Bạn Không có kết nối", Toast.LENGTH_SHORT).show();
         }
         AnhXa();
         InitMap();
@@ -94,6 +86,13 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
         btn_turn      = findViewById(R.id.btn_turn);
         btn_autoA     = findViewById(R.id.btn_autoA);
         btn_play      = findViewById(R.id.btn_play);
+
+        Ship4       = getResources().obtainTypedArray(R.array.ship4_array);
+        ship4_land  = getResources().obtainTypedArray(R.array.ship4_array_land);
+        ship3       = getResources().obtainTypedArray(R.array.ship3_array);
+        ship3_land  = getResources().obtainTypedArray(R.array.ship3_array_land);
+        ship2       = getResources().obtainTypedArray(R.array.ship2_array);
+        ship2_land  = getResources().obtainTypedArray(R.array.ship2_array_land);
 
     }
 
@@ -127,7 +126,6 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
 
     @Override
     protected void onDestroy() {
-        mediaPlayer.stop();
         super.onDestroy();
     }
 
@@ -265,16 +263,16 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
                 ischecked.add(mButton.getId());
                 switch (ship_Type){
                     case 4:
-                        mButton.setBackgroundResource(ship4[k]);
+                        mButton.setBackground(Ship4.getDrawable(k));
                         continue;
                     case 3:
-                        mButton.setBackgroundResource(ship3[k]);
+                        mButton.setBackground(ship3.getDrawable(k));
                         continue;
                     case 2:
-                        mButton.setBackgroundResource(ship2[k]);
+                        mButton.setBackground(ship2.getDrawable(k));
                         continue;
                     case 1:
-                        mButton.setBackgroundResource(ship1[k]);
+                        mButton.setBackgroundResource(ship1);
                         continue;
                 }
             }//for
@@ -311,16 +309,16 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
                 ischecked.add(mButton.getId());
                 switch (ship_Type){
                     case 4:
-                        mButton.setBackgroundResource(ship4_land[k]);
+                        mButton.setBackground(ship4_land.getDrawable(k));
                         continue;
                     case 3:
-                        mButton.setBackgroundResource(ship3_land[k]);
+                        mButton.setBackground(ship3_land.getDrawable(k));
                         continue;
                     case 2:
-                        mButton.setBackgroundResource(ship2_land[k]);
+                        mButton.setBackground(ship2_land.getDrawable(k));
                         continue;
                     case 1:
-                        mButton.setBackgroundResource(ship1_land[k]);
+                        mButton.setBackgroundResource(ship1_land);
                         continue;
                 }
             }
@@ -587,6 +585,10 @@ public class BattleShipPreActivity extends AppCompatActivity implements View.OnC
             super.handleMessage(msg);
             switch (msg.what){
                 case Messages.MESSAGE_STATE_CHANGE:
+                    if(msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
+                        Toast.makeText(BattleShipPreActivity.this, Messages.NO_CONNECTION, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
         }
 

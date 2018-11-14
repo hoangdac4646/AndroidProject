@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -86,6 +87,8 @@ public class FindingRoom extends AppCompatActivity {
         btn_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
+                mp.start();
                 mDevices.clear();
                 Names.clear();
                 DeviceList.setAdapter(null);
@@ -97,6 +100,8 @@ public class FindingRoom extends AppCompatActivity {
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
+                mp.start();
                 if (DeviceSelected != null) {
                     String address = DeviceSelected.getAddress();
                     if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
