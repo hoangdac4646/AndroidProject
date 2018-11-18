@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/background_game4"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_margin="20dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+            <TableLayout
+                android:id="@+id/chess_broad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/chess_board">
+
+            </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_margin="20dp"
+        android:weightSum="6"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <Button
+                android:id="@+id/btn_pause_chess"
+                android:layout_weight="1"
+                android:background="@drawable/tamdung_press"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btn_sound_chess"
+                android:layout_weight="1"
+                android:background="@drawable/sound_press"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btn_chat_chess"
+                android:layout_weight="3"
+                android:background="@drawable/chat_press"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1.3"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp">
+
+            <TextView
+                android:textSize="25sp"
+                android:textColor="#FFFFFF"
+                android:text="01:00"
+                android:gravity="center"
+                android:id="@+id/txt_time"
+                android:layout_weight="1"
+                android:background="@drawable/timer_version2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_weight="0.8"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"></LinearLayout>
+            <TextView
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:id="@+id/txt_p1Name_chess"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/tag_playername1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>//name
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:layout_marginStart="10dp"
+                android:fontFamily="Segoe IU"
+                android:textSize="24sp"
+                android:textColor="#FFFF"
+                android:layout_weight="1"
+                android:text="Bước vừa đi:"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/txt_p1_Step"
+                android:fontFamily="Segoe IU"
+                android:textSize="24sp"
+                android:textColor="#FFFF"
+                android:layout_weight="1"
+                android:text="A3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_weight="0.8"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"></LinearLayout>
+            <TextView
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:id="@+id/txt_p2Name_chess"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/tag_playername2_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>//name2
+
+        <LinearLayout
+            android:weightSum="2"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <TextView
+                android:layout_marginStart="10dp"
+                android:fontFamily="Segoe IU"
+                android:textSize="24sp"
+                android:textColor="#FFFF"
+                android:layout_weight="1"
+                android:text="Bước vừa đi:"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/txt_p2_Step"
+                android:fontFamily="Segoe IU"
+                android:textSize="24sp"
+                android:textColor="#FFFF"
+                android:layout_weight="1"
+                android:text="A3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+</LinearLayout>

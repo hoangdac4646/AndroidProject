@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_game3"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_weight="2"
+        android:weightSum="4"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+       <LinearLayout
+           android:layout_weight="1"
+           android:weightSum="2"
+           android:layout_width="0dp"
+           android:layout_height="match_parent">
+           <ImageView
+
+               android:layout_margin="5dp"
+               android:layout_weight="1"
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:id="@+id/img_finish"
+               android:src="@drawable/check_press"
+               />
+           <ImageView
+               android:layout_margin="5dp"
+               android:layout_weight="1"
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:id="@+id/img_dauhang"
+               android:src="@drawable/dauhang_press"
+               />
+       </LinearLayout>
+       <LinearLayout
+           android:layout_weight="2"
+           android:background="@drawable/timer"
+           android:layout_width="0dp"
+           android:layout_height="50dp">
+           <TextView
+               android:id="@+id/tv_timer"
+               android:layout_width="match_parent"
+               android:text="0:00"
+               android:textColor="#fafafa"
+               android:textSize="30dp"
+               android:gravity="center"
+               android:layout_height="match_parent" />
+       </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:weightSum="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/img_pause"
+                android:src="@drawable/tamdung_press"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/img_amthanh"
+                android:src="@drawable/sound_press"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="8"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_marginLeft="13dp"
+            android:layout_marginBottom="13dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+
+                >
+                <TableRow
+                    android:layout_weight="1"
+                    android:weightSum="3"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:id="@+id/tableRow1"
+                    android:layout_height="0dp">
+
+                    <fragment
+
+                        android:id="@+id/cellGroupFragment"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="0"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment2"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="1"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment3"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="2"
+                        android:layout_weight="1" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_weight="1"
+                    android:weightSum="3"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment4"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="3"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment5"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="4"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment6"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="5"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_weight="1"
+                    android:weightSum="3"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="117dp">
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment7"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="6"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment8"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="7"
+                        android:layout_weight="1" />
+
+                    <fragment
+                        android:id="@+id/cellGroupFragment9"
+                        android:name="com.example.root.minigame.Suduku.CellGroupFragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:tag="8"
+                        android:layout_weight="1" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+       <LinearLayout
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_marginLeft="5dp"
+           android:orientation="vertical"
+           android:layout_height="match_parent">
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Chat"
+               android:textColor="#ffffff"
+               android:padding="4dp"
+               android:background="@drawable/drawable_chat"
+               />
+           <LinearLayout
+               android:weightSum="5"
+               android:orientation="vertical"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+               <LinearLayout
+                   android:layout_weight="4"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="0dp">
+                   <ListView
+                       android:layout_weight="4"
+                       android:id="@+id/lv_SogukuChat"
+                       android:layout_width="match_parent"
+                       android:layout_height="0dp"></ListView>
+               </LinearLayout>
+              <LinearLayout
+                  android:layout_weight="1"
+                  android:weightSum="10"
+                  android:layout_marginBottom="13dp"
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp">
+                  <EditText
+                      android:layout_weight="9"
+                      android:id="@+id/edt_sogukuContent"
+                      android:layout_width="0dp"
+                      android:ems="10"
+                      android:layout_height="match_parent" />
+                  <Button
+                      android:text="Gửi"
+                      android:id="@+id/btn_SogukuGui"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content" />
+              </LinearLayout>
+           </LinearLayout>
+
+       </LinearLayout>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

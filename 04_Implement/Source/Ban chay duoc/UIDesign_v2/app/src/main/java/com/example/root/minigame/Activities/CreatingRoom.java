@@ -3,8 +3,13 @@ package com.example.root.minigame.Activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -13,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -25,32 +31,31 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.root.minigame.BattleShip.BattleShipPreActivity;
-import com.example.root.minigame.Caro.ActivityCaRo;
+import com.example.root.minigame.Chess.ChessActivity;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.Classes.Player;
 import com.example.root.minigame.R;
-import com.example.root.minigame.mBluetooth.Adapter_listview;
+import com.example.root.minigame.Sound.Click_button;
+import com.example.root.minigame.Chat.Adapter_listview;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
-import com.example.root.minigame.mBluetooth.GuiTinNhan;
+import com.example.root.minigame.Chat.GuiTinNhan;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class CreatingRoom extends AppCompatActivity {
-
+   public  MediaPlayer mediaPlayer;
     Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_setting,btn_guiTinNhan;
     ListView listView_chat;
+    int CheckPhatNhac=0;
     List<GuiTinNhan> Arr_TinNhan = new ArrayList<>();
     Adapter_listview adapter_listview;
     EditText NoiDung;
     ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
     FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3;
     TextView txt_p1Name, txt_p2Name;
-    boolean iscarocheck = false;
-    MediaPlayer mp_button;
 
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
@@ -62,29 +67,32 @@ public class CreatingRoom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BluetoothAdapter.getDefaultAdapter().setName(Main.thisPlayer.getPlayerName());
-        if(StartingMenu.mConnection != null){
-
-        }
-        StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
-
         AnhXa();
-
+        if(StartingMenu.mConnection != null && mBTAdapter.isEnabled()){
+            StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
+        }
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        Main.CheckNhac=1;
+        stopService(Main.NhacCho);
+        mediaPlayer = MediaPlayer.create(CreatingRoom.this,R.raw.nhacnen2);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
         setContentView(R.layout.activity_waiting_room);
+
+        Main.click_button = new Click_button(CreatingRoom.this);
         btn_guiTinNhan  = findViewById(R.id.btn_CreateGui);
         listView_chat = findViewById(R.id.lv_listTinNhan);
         adapter_listview = new Adapter_listview(CreatingRoom.this,R.layout.custom_listview,Arr_TinNhan);
         listView_chat.setAdapter(adapter_listview);
         adapter_listview.notifyDataSetChanged();
         NoiDung = findViewById(R.id.edt_CreateContent);
-        mp_button = MediaPlayer.create(getApplicationContext(), R.raw.pingping);
         btn_guiTinNhan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Main.click_button.PlayButtonSound();
                 if(StartingMenu.mConnection.mBTconnection.getState() !=BluetoothConnectionService.STATE_CONNECTED){
 
                 }else{
@@ -131,27 +139,12 @@ public class CreatingRoom extends AppCompatActivity {
 
         fl_p1Name.setVisibility(View.VISIBLE);
         fl_p2Name.setVisibility(View.INVISIBLE);
-        btn_game1.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                startActivity(new Intent(getApplicationContext(), ActivityCaRo.class));
-                return true;
-            }
-        });
-        btn_game2.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                startActivity(new Intent(getApplicationContext(), BattleShipPreActivity.class));
-                return true;
-            }
-        });
 
 
         btn_setting.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                mp_button.start();
+                Main.click_button.PlayButtonSound();
             }
         });
 
@@ -162,8 +155,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mp_button.start();
-                    iscarocheck = true;
+                    Main.click_button.PlayButtonSound();
                     if (iv_game1Tick.getVisibility() == View.VISIBLE) {
                         iv_game1Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -181,7 +173,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    iscarocheck = false;
+                    Main.click_button.PlayButtonSound();
                     if (iv_game2Tick.getVisibility() == View.VISIBLE) {
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
@@ -199,7 +191,7 @@ public class CreatingRoom extends AppCompatActivity {
             btn_game3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    iscarocheck = false;
+                    Main.click_button.PlayButtonSound();
                     if (iv_game3Tick.getVisibility() == View.VISIBLE) {
                         iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName());
@@ -218,14 +210,15 @@ public class CreatingRoom extends AppCompatActivity {
             fl_p2Name.setVisibility(View.VISIBLE);
             txt_p2Name.setText(Main.thisPlayer.getPlayerName());
             txt_p1Name.setText(enemyPlayer.getPlayerName());
+            StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
+            fl_p2Name.setVisibility(View.VISIBLE);
         }
 
 
         btn_ready.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ready_check_no_focus);
-                mp.start();
+                Main.click_button.PlayButtonSound();
                 if (Main.thisPlayer.isHost()) {
                     if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
                     {
@@ -236,6 +229,7 @@ public class CreatingRoom extends AppCompatActivity {
                 } else {
                     iv_p2Ready.setVisibility(View.VISIBLE);
                 }
+
                 if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
                     StartingMenu.mConnection.sendMessage("Start");
                     StartingGame();
@@ -262,9 +256,22 @@ public class CreatingRoom extends AppCompatActivity {
         btn_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Main.click_button.PlayButtonSound();
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mBroadcastReciever, filter);
+        if(CheckPhatNhac!=0) {
+            mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.nhacnen2);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.start();
+        }
     }
 
     private void StartingGame() {
@@ -277,8 +284,7 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-
-
+        startActivity(new Intent(getApplicationContext(), ChessActivity.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -306,6 +312,7 @@ public class CreatingRoom extends AppCompatActivity {
         }
         mBTAdapter.startDiscovery();
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void CheckBTpermission() {
@@ -337,13 +344,32 @@ public class CreatingRoom extends AppCompatActivity {
         super.onStop();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
+       CheckPhatNhac=1;
+        if(mediaPlayer!=null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer=null;
+        }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
+        if(mediaPlayer!=null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer=null;
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mBroadcastReciever);
     }
 
     @Override
@@ -361,7 +387,20 @@ public class CreatingRoom extends AppCompatActivity {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
-                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
+                        if(Main.thisPlayer.isHost() == false){
+                            if(StartingMenu.mConnection != null && mBTAdapter.isEnabled() == true){
+                                StartingMenu.mConnection.Reconnect();
+                                if(StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED){
+                                    Toast.makeText(getApplicationContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "Kết nối thất bại!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                        else{
+                            StartingMenu.mConnection.StartConnection(mCreatingRoomHandler);
+                        }
                     } else {
                         StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
                         fl_p2Name.setVisibility(View.VISIBLE);
@@ -441,8 +480,8 @@ public class CreatingRoom extends AppCompatActivity {
                 case Messages.MESSAGE_DEVICE_NAME:
                     String mConnectedDeviceName = null;
                     mConnectedDeviceName = msg.getData().getString(Messages.DEVICE_NAME);
-                    Toast.makeText(CreatingRoom.this, mConnectedDeviceName, Toast.LENGTH_LONG).show();
-
+                    StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
+                    fl_p2Name.setVisibility(View.VISIBLE);
                     break;
 
                 case Messages.MESSAGE_TOAST:
@@ -450,6 +489,30 @@ public class CreatingRoom extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                     break;
+            }
+        }
+    };
+
+    private BroadcastReceiver mBroadcastReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Dialog dialog = new Dialog(context);
+
+            if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                if (BluetoothAdapter.STATE_OFF == state) {
+                    Toast.makeText(context, "Bluetooth is Off. Return to waitting room", Toast.LENGTH_SHORT).show();
+                    dialog.show();
+                    dialog.setCancelable(false);
+                }
+                else if(BluetoothAdapter.STATE_ON == state){
+                    dialog.dismiss();
+                    Intent intent1 = getIntent();
+                    finish();
+                    startActivity(intent1);
+                }
             }
         }
     };

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:background="@drawable/vien_khungchat"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="   CHAT"
+            android:textColor="#fafafa"
+            android:textSize="30dp"
+            android:background="@drawable/header_chat"
+            />
+        <ListView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/lv_noidungnhan"
+            android:layout_height="300dp">
+        </ListView>
+        <LinearLayout
+            android:background="#ffea00"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <EditText
+                android:id="@+id/tv_noidungCaro"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:hint="Type your text "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:ems="9"
+                android:padding="5dp"
+                />
+            <Button
+                android:padding="5dp"
+                android:id="@+id/btn_guitinnhan"
+                android:layout_marginTop="18dp"
+                android:layout_marginRight="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gửi"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
