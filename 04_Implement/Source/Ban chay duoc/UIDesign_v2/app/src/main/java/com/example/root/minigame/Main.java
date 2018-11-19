@@ -19,7 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.root.minigame.Activities.CreatingRoom;
-import com.example.root.minigame.Sound.AmThanh;
+import com.example.root.minigame.Sound.Sound;
 import com.example.root.minigame.Sound.Click_button;
 import com.example.root.minigame.Activities.StartingMenu;
 import com.example.root.minigame.Classes.Player;
@@ -30,10 +30,10 @@ import static android.view.Window.FEATURE_NO_TITLE;
 public class Main extends AppCompatActivity {
 
     public static Click_button click_button;
-    public static int CheckNhac=0;
+    public static int isMusicExist = 0;
     Button btn_ok, btn_return, btn_setting;
     public static Player thisPlayer;
-    public static Intent  NhacCho;
+    public static Intent  backgroundMusic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +44,7 @@ public class Main extends AppCompatActivity {
         dialog_setName.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_setName.setContentView(R.layout.dialog_set_nickname);
         dialog_setName.show();
-        final MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(),R.raw.pingping);
+        final MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(),R.raw.buttonclick_sound);
         Button btn_confirm = (Button) dialog_setName.findViewById(R.id.btn_confirm);
         final EditText edt_playerName = (EditText) dialog_setName.findViewById(R.id.edt_playerName);
 
@@ -73,7 +73,6 @@ public class Main extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_menu);
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mBroadcastReciever, filter);
         btn_ok = (Button) findViewById(R.id.btn_ok);
         btn_return = (Button) findViewById(R.id.btn_return);
         btn_setting = (Button) findViewById(R.id.btn_setting);
@@ -128,28 +127,25 @@ public class Main extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if(Main.CheckNhac==0) {
-            NhacCho = new Intent(Main.this, AmThanh.class);
-            NhacCho.putExtra("TenLoai", "PhongCho1");
-            startService(NhacCho);
-            CheckNhac = 0;
+        super.onResume();
+        if(Main.isMusicExist==0) {
+            backgroundMusic = new Intent(Main.this, Sound.class);
+            backgroundMusic.putExtra("TenLoai", "PhongCho1");
+            startService(backgroundMusic);
+            isMusicExist = 0;
         }
 
-        super.onResume();
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mBroadcastReciever, filter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mBroadcastReciever);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mBroadcastReciever);
+        stopService(backgroundMusic);
     }
 
     @Override
@@ -160,32 +156,5 @@ public class Main extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
     }
-
-    public static class CustomListApdater_Chat {
-    }
-
-    private BroadcastReceiver mBroadcastReciever = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Dialog dialog = new Dialog(context);
-
-            if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-                if (BluetoothAdapter.STATE_OFF == state) {
-                    Toast.makeText(context, "Bluetooth is Off. Return to waitting room", Toast.LENGTH_SHORT).show();
-                    dialog.show();
-                    dialog.setCancelable(false);
-                }
-                else if(BluetoothAdapter.STATE_ON == state){
-                    dialog.dismiss();
-                    Intent intent1 = getIntent();
-                    finish();
-                    startActivity(intent1);
-                }
-            }
-        }
-    };
 }
 

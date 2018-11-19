@@ -96,7 +96,7 @@
                     android:layout_width="0dp"
                     android:layout_height="20dp"
                     android:layout_marginStart="50dp"
-                    android:background="@drawable/caidat_press"/>
+                    android:background="@drawable/setting_press"/>
             </LinearLayout>
 
             <LinearLayout

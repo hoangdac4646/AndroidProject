@@ -19,14 +19,14 @@ import android.widget.Toast;
 
 import com.example.root.minigame.Main;
 import com.example.root.minigame.R;
-import com.example.root.minigame.Sound.AmThanh;
+import com.example.root.minigame.Sound.Sound;
 import com.example.root.minigame.Sound.Click_button;
 import com.example.root.minigame.mBluetooth.BluetoothConnection;
 
 
 
 public class StartingMenu extends AppCompatActivity {
-    AmThanh amThanh;
+    Sound Sound;
     Button btn_create, btn_find, btn_setting;
     private BluetoothAdapter mBTAdapter;
     private final int REQUEST_CODE_ENABLE = 101;
@@ -136,11 +136,11 @@ public class StartingMenu extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(Main.CheckNhac==1){
-            Main.CheckNhac=2;
+        if(Main.isMusicExist==1){
+            Main.isMusicExist=2;
            // CreatingRoom.mediaPlayer.release();
            // CreatingRoom.mediaPlayer.stop();
-            Intent intent = new Intent(StartingMenu.this,AmThanh.class);
+            Intent intent = new Intent(StartingMenu.this,Sound.class);
             intent.putExtra("TenLoai","PhongCho1");
             startService(intent);
         }

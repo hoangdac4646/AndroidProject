@@ -43,7 +43,7 @@
             <Button
                 android:id="@+id/btn_pause_chess"
                 android:layout_weight="1"
-                android:background="@drawable/tamdung_press"
+                android:background="@drawable/pause_press"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
             <Button
@@ -134,7 +134,7 @@
                 android:id="@+id/txt_p2Name_chess"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/tag_playername2_1"
+                android:background="@drawable/tag_playername2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         </LinearLayout>//name2

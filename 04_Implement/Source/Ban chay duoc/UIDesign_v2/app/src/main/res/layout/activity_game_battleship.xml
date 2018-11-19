@@ -52,13 +52,11 @@
                     android:id="@+id/txt_p1Name"
                     android:layout_width="84dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/playername1"
-                    android:text="Player1"
+                    android:background="@drawable/tag_playername1"
                     android:textAlignment="center"
                     android:textColor="#ffffff"
                     android:textSize="15dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="5dp"
                     />
 
             </LinearLayout>
@@ -163,7 +161,7 @@
                     android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:background="@drawable/tamdung_press" />
+                    android:background="@drawable/pause_press" />
 
                 <Button
                     android:id="@+id/btn_sound"
@@ -189,12 +187,10 @@
                     android:layout_width="85dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/playername2"
-                    android:text="Player2"
+                    android:background="@drawable/tag_playername2"
                     android:textAlignment="center"
                     android:textColor="#ffffff"
                     android:textSize="15dp"
-                    android:layout_marginTop="7dp"
                     />
 
             </LinearLayout>
