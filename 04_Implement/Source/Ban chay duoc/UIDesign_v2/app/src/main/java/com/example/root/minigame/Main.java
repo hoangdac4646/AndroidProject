@@ -142,14 +142,6 @@ public class Main extends AppCompatActivity {
         super.onPause();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-<<<<<<< HEAD
-=======
-        stopService(backgroundMusic);
->>>>>>> master
-    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

@@ -3,7 +3,6 @@ package com.example.root.minigame.Chess;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,9 +21,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,21 +29,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.example.root.minigame.Activities.CreatingRoom;
 import com.example.root.minigame.Activities.StartingMenu;
-import com.example.root.minigame.BattleShip.BattleShipGameActivity;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.R;
 import com.example.root.minigame.Sound.Click_button;
-import com.example.root.minigame.Suduku.Soduku_Activity;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Timer;
 
 public class ChessActivity extends AppCompatActivity {
 
@@ -56,7 +46,6 @@ public class ChessActivity extends AppCompatActivity {
     private final int MAX_ROW = 8;
     private final int MAX_COL = 8;
     private boolean chessmanIsClicked = false;
-    private int Whichchess = 0;
     private final int KING = 1;
     private final int QUEEN = 2;
     private final int BISHOP = 3;
@@ -83,10 +72,10 @@ public class ChessActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private ArrayList<Integer> theWay = new ArrayList<>();
     private ArrayList<Integer> stepToOurKing = new ArrayList<>();
-    private MediaPlayer mp;
     private boolean isCheckMate = false;
     private int posCheckUs;
     private Cells King;
+    private Click_button sound;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -133,7 +122,6 @@ public class ChessActivity extends AppCompatActivity {
         txt_p1Name.setText(Main.thisPlayer.getPlayerName());
         linear_row = new LinearLayout(this);
         linear_row.setWeightSum(8f);
-        mp = MediaPlayer.create(this,R.raw.chesspiece_move);
         txt_p2Name.setText(CreatingRoom.enemyPlayer.getPlayerName());
         linear_row.setOrientation(LinearLayout.VERTICAL);
         linear_row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -141,9 +129,11 @@ public class ChessActivity extends AppCompatActivity {
         if(Main.thisPlayer.isHost()){
             yourTurn = true;
         }
+        sound = new Click_button(getApplicationContext());
         btn_pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sound.PlayButtonSound();
                 final Dialog mdialog = new Dialog(ChessActivity.this);
                 mdialog.show();
                 CheckBluetooth();
@@ -178,16 +168,16 @@ public class ChessActivity extends AppCompatActivity {
                 });
             }
         });
+
         countDownTimer = new CountDownTimer(30000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 Countdown--;
                 txt_time.setText(String.format("%02d : %02d", Countdown/60 , (Countdown % (60))));
             }
-
             @Override
             public void onFinish() {
-                if(yourTurn == true && Countdown == 1){
+                if(yourTurn == true){
                     Countdown = 30;
                     CheckBluetooth();
                     if(mBTadapter.isEnabled()){
@@ -202,7 +192,21 @@ public class ChessActivity extends AppCompatActivity {
             }
         };
         countDownTimer.start();
+        btn_chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sound.PlayButtonSound();
 
+
+                // chat
+            }
+        });
+        btn_sound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sound.PlayButtonSound();
+            }
+        });
     }
 
     private void CheckBluetooth(){
@@ -290,11 +294,11 @@ public class ChessActivity extends AppCompatActivity {
                                             stepToOurKing.clear();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
+                                            sound.check_mate();
                                             Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
+
                                         }
-
-                                        CheckBluetooth();
-
+                                        sound.chess_move();
                                     } else {
                                         DrawPieces(mbutton.getId(), CellHasPieces.get(cellHasPiecesInt.indexOf(mOldIndex)));
                                         cellHasPiecesInt.set(cellHasPiecesInt.indexOf(mOldIndex), mbutton.getId());
@@ -309,8 +313,10 @@ public class ChessActivity extends AppCompatActivity {
                                             stepToOurKing.clear();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            sound.check_mate();
+                                            Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
                                         }
+                                        sound.chess_move();
                                     }
                                 }
                             }
@@ -335,9 +341,7 @@ public class ChessActivity extends AppCompatActivity {
         return false;
     }
 
-
-
-
+    
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -814,23 +818,22 @@ public class ChessActivity extends AppCompatActivity {
                 ImageView mButton = (ImageView) row.getChildAt(num_COL);
                 mButton.setAlpha(0.5F);
                 if(Eatable){
-
                     mButton.setBackgroundColor(Color.parseColor("#FFFF6A5F"));
-
                 }else{
                     if(checkIsMoveable(posOfKing , i)){
                         if(stepToOurKing.indexOf(i) != -1){
-                            mButton.setBackgroundColor(Color.parseColor("#00FF00"));
+                            mButton.setBackgroundColor(Color.parseColor("#00FF7F"));
                         }
                     }
                     else{
-                        mButton.setBackgroundColor(Color.parseColor("#00FF00"));
+                        mButton.setBackgroundColor(Color.parseColor("#00FF7F"));
                     }
                 }
                 theWay.add(i);
             }
         }
     }//dayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void hideTheWay(){
         for(int i = 0; i < theWay.size();i++ ){
@@ -997,7 +1000,6 @@ public class ChessActivity extends AppCompatActivity {
                 case Messages.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     String writeMessage = new String(writeBuf);
-                    Countdown = 30;
 
                     break;
                 case Messages.MESSAGE_READ:
@@ -1009,10 +1011,10 @@ public class ChessActivity extends AppCompatActivity {
                             int oldpos = Integer.parseInt(mes[1]);
                             NearlyStep(possition, txt_EnemyStep);
                             if (checkIsMoveable(possition, oldpos)) {
-                                Countdown = 30;
                                 if (Eatable) {
                                     EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)), CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
+                                        sound.check_mate();
                                         Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
                                         isCheckMate = true;
                                         checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
@@ -1022,13 +1024,16 @@ public class ChessActivity extends AppCompatActivity {
                                         cellHasPiecesInt.set(cellHasPiecesInt.indexOf(oldpos), possition);
                                         DrawPieces(oldpos, null);
                                     if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
-                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
+                                        sound.check_mate();
+                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
                                         isCheckMate = true;
                                         checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     }
                                 }
                             }
                             yourTurn = true;
+                            countDownTimer.start();
+                            Countdown = 30;
 
                         } catch (NumberFormatException e) {
                             if(readMessage.equals("pause")){
@@ -1041,7 +1046,6 @@ public class ChessActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                             else if(readMessage.equals("timeout")){
-                                Countdown = 30;
                                 yourTurn = true;
                             }
                             else if(readMessage.equals("restart")){

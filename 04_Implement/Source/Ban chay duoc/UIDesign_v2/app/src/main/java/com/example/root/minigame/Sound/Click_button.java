@@ -17,4 +17,16 @@ public class Click_button {
         mediaPlayer.setVolume(100,100);
         mediaPlayer.start();
     }
+    public void check_mate(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.checkmate);
+        mediaPlayer.setVolume(100,100);
+        mediaPlayer.start();
+    }
+    public void chess_move(){
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.chesspiece_move);
+        mediaPlayer.setVolume(100,100);
+        mediaPlayer.start();
+    }
+
+
 }
