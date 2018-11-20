@@ -31,6 +31,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.minigame.BattleShip.BattleShipPreActivity;
+import com.example.root.minigame.Caro.CaroActivity;
 import com.example.root.minigame.Chess.ChessActivity;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
@@ -38,23 +40,24 @@ import com.example.root.minigame.Classes.Player;
 import com.example.root.minigame.R;
 import com.example.root.minigame.Sound.Click_button;
 import com.example.root.minigame.Chat.Adapter_listview;
+import com.example.root.minigame.Sudoku.SudokuActivity;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
-import com.example.root.minigame.Chat.GuiTinNhan;
+import com.example.root.minigame.Chat.SendMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class CreatingRoom extends AppCompatActivity {
-   public  MediaPlayer mediaPlayer;
-    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_setting,btn_guiTinNhan;
+    public MediaPlayer mediaPlayer;
+    Button btn_ready, btn_return, btn_game1, btn_game2, btn_game3, btn_game4, btn_setting, btn_send;
     ListView listView_chat;
-    int CheckPhatNhac=0;
-    List<GuiTinNhan> Arr_TinNhan = new ArrayList<>();
+    int isMusicPlaying = 0;
+    List<SendMessage> arr_message = new ArrayList<>();
     Adapter_listview adapter_listview;
-    EditText NoiDung;
-    ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick;
-    FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3;
+    EditText edt_message;
+    ImageView iv_p1Ready, iv_p2Ready, iv_game1Tick, iv_game2Tick, iv_game3Tick, iv_game4Tick;
+    FrameLayout fl_p1Name, fl_p2Name, fl_btn_game1, fl_btn_game2, fl_btn_game3, fl_btn_game4;
     TextView txt_p1Name, txt_p2Name;
 
     private BluetoothAdapter mBTAdapter;
@@ -68,38 +71,38 @@ public class CreatingRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         BluetoothAdapter.getDefaultAdapter().setName(Main.thisPlayer.getPlayerName());
         AnhXa();
-        if(StartingMenu.mConnection != null && mBTAdapter.isEnabled()){
+        if (StartingMenu.mConnection != null && mBTAdapter.isEnabled()) {
             StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
         }
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        Main.CheckNhac=1;
-        stopService(Main.NhacCho);
-        mediaPlayer = MediaPlayer.create(CreatingRoom.this,R.raw.nhacnen2);
+        Main.isMusicExist = 1;
+        stopService(Main.backgroundMusic);
+        mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.background_music2);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
         setContentView(R.layout.activity_waiting_room);
 
         Main.click_button = new Click_button(CreatingRoom.this);
-        btn_guiTinNhan  = findViewById(R.id.btn_CreateGui);
-        listView_chat = findViewById(R.id.lv_listTinNhan);
-        adapter_listview = new Adapter_listview(CreatingRoom.this,R.layout.custom_listview,Arr_TinNhan);
+        btn_send = findViewById(R.id.btn_send);
+        listView_chat = findViewById(R.id.lv_listmessage);
+        adapter_listview = new Adapter_listview(CreatingRoom.this, R.layout.custom_listview, arr_message);
         listView_chat.setAdapter(adapter_listview);
         adapter_listview.notifyDataSetChanged();
-        NoiDung = findViewById(R.id.edt_CreateContent);
-        btn_guiTinNhan.setOnClickListener(new View.OnClickListener() {
+        edt_message = findViewById(R.id.edt_inputmessage);
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Main.click_button.PlayButtonSound();
-                if(StartingMenu.mConnection.mBTconnection.getState() !=BluetoothConnectionService.STATE_CONNECTED){
+                if (StartingMenu.mConnection.mBTconnection.getState() != BluetoothConnectionService.STATE_CONNECTED) {
 
-                }else{
-                    String Content = "-8"+NoiDung.getText().toString();
-                    StartingMenu.mConnection.sendMessage(Content);
-                    Arr_TinNhan.add(new GuiTinNhan(NoiDung.getText().toString(),"Me"));
-                    NoiDung.setText("");
+                } else {
+                    String tmp = "-8" + edt_message.getText().toString();
+                    StartingMenu.mConnection.sendMessage(tmp);
+                    arr_message.add(new SendMessage(edt_message.getText().toString(), "Me"));
+                    edt_message.setText("");
                     adapter_listview.notifyDataSetChanged();
 
                 }
@@ -111,6 +114,7 @@ public class CreatingRoom extends AppCompatActivity {
         btn_game1 = (Button) findViewById(R.id.btn_game1);
         btn_game2 = (Button) findViewById(R.id.btn_game2);
         btn_game3 = (Button) findViewById(R.id.btn_game3);
+        btn_game4 = (Button) findViewById(R.id.btn_game4);
         btn_setting = (Button) findViewById(R.id.btn_setting);
 
         iv_p1Ready = (ImageView) findViewById(R.id.iv_p1Ready);
@@ -119,6 +123,7 @@ public class CreatingRoom extends AppCompatActivity {
         iv_game1Tick = (ImageView) findViewById(R.id.iv_game1Tick);
         iv_game2Tick = (ImageView) findViewById(R.id.iv_game2Tick);
         iv_game3Tick = (ImageView) findViewById(R.id.iv_game3Tick);
+        iv_game4Tick = (ImageView) findViewById(R.id.iv_game4Tick);
 
 
         fl_p1Name = (FrameLayout) findViewById(R.id.fl_p1Name);
@@ -126,6 +131,7 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game1 = (FrameLayout) findViewById(R.id.fl_btn_game1);
         fl_btn_game2 = (FrameLayout) findViewById(R.id.fl_btn_game2);
         fl_btn_game3 = (FrameLayout) findViewById(R.id.fl_btn_game3);
+        fl_btn_game4 = (FrameLayout) findViewById(R.id.fl_btn_game4);
 
         txt_p1Name = (TextView) findViewById(R.id.txt_p1Name);
         txt_p2Name = (TextView) findViewById(R.id.txt_p2Name);
@@ -136,6 +142,7 @@ public class CreatingRoom extends AppCompatActivity {
         iv_game1Tick.setVisibility(View.INVISIBLE);
         iv_game2Tick.setVisibility(View.INVISIBLE);
         iv_game3Tick.setVisibility(View.INVISIBLE);
+        iv_game4Tick.setVisibility(View.INVISIBLE);
 
         fl_p1Name.setVisibility(View.VISIBLE);
         fl_p2Name.setVisibility(View.INVISIBLE);
@@ -161,9 +168,10 @@ public class CreatingRoom extends AppCompatActivity {
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
                         StartingMenu.mConnection.sendMessage("untick1");
                     } else {
-                        iv_game1Tick.setVisibility(View.VISIBLE);
-                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        iv_game4Tick.setVisibility(View.INVISIBLE);
                         iv_game3Tick.setVisibility(View.INVISIBLE);
+                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        iv_game1Tick.setVisibility(View.VISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Caro");
                         StartingMenu.mConnection.sendMessage("tick1");
                     }
@@ -179,9 +187,10 @@ public class CreatingRoom extends AppCompatActivity {
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
                         StartingMenu.mConnection.sendMessage("untick2");
                     } else {
+                        iv_game4Tick.setVisibility(View.INVISIBLE);
+                        iv_game3Tick.setVisibility(View.INVISIBLE);
                         iv_game2Tick.setVisibility(View.VISIBLE);
                         iv_game1Tick.setVisibility(View.INVISIBLE);
-                        iv_game3Tick.setVisibility(View.INVISIBLE);
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Tàu chiến");
                         StartingMenu.mConnection.sendMessage("tick2");
                     }
@@ -198,6 +207,7 @@ public class CreatingRoom extends AppCompatActivity {
                         mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
                         StartingMenu.mConnection.sendMessage("untick3");
                     } else {
+                        iv_game4Tick.setVisibility(View.INVISIBLE);
                         iv_game3Tick.setVisibility(View.VISIBLE);
                         iv_game2Tick.setVisibility(View.INVISIBLE);
                         iv_game1Tick.setVisibility(View.INVISIBLE);
@@ -206,11 +216,32 @@ public class CreatingRoom extends AppCompatActivity {
                     }
                 }
             });
+
+            btn_game4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Main.click_button.PlayButtonSound();
+                    if (iv_game4Tick.getVisibility() == View.VISIBLE) {
+                        iv_game4Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName());
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "N/A");
+                        StartingMenu.mConnection.sendMessage("untick4");
+                    } else {
+                        iv_game4Tick.setVisibility(View.VISIBLE);
+                        iv_game3Tick.setVisibility(View.INVISIBLE);
+                        iv_game2Tick.setVisibility(View.INVISIBLE);
+                        iv_game1Tick.setVisibility(View.INVISIBLE);
+                        mBTAdapter.setName(Main.thisPlayer.getPlayerName() + "&" + "Cờ vua");
+                        StartingMenu.mConnection.sendMessage("tick4");
+                    }
+                }
+            });
+
         } else {
+            StartingMenu.mConnection.sendMessage("/&" + Main.thisPlayer.getPlayerName());
             fl_p2Name.setVisibility(View.VISIBLE);
             txt_p2Name.setText(Main.thisPlayer.getPlayerName());
             txt_p1Name.setText(enemyPlayer.getPlayerName());
-            StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
             fl_p2Name.setVisibility(View.VISIBLE);
         }
 
@@ -220,12 +251,10 @@ public class CreatingRoom extends AppCompatActivity {
             public void onClick(View view) {
                 Main.click_button.PlayButtonSound();
                 if (Main.thisPlayer.isHost()) {
-                    if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE)
-                    {
+                    if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE && iv_game4Tick.getVisibility() == View.INVISIBLE) {
                         Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
                         return;
-                    }
-                    else iv_p1Ready.setVisibility(View.VISIBLE);
+                    } else iv_p1Ready.setVisibility(View.VISIBLE);
                 } else {
                     iv_p2Ready.setVisibility(View.VISIBLE);
                 }
@@ -233,18 +262,18 @@ public class CreatingRoom extends AppCompatActivity {
                 if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
                     StartingMenu.mConnection.sendMessage("Start");
                     StartingGame();
-                }
-                else
-                {
+                } else {
                     StartingMenu.mConnection.sendMessage("Ready");
                     {
                         btn_game1.setEnabled(false);
                         btn_game2.setEnabled(false);
                         btn_game3.setEnabled(false);
+                        btn_game4.setEnabled(false);
 
                         fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
                         fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
                         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+                        fl_btn_game4.setBackgroundResource(R.drawable.review_game3_disabled);
                     }
                     Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
                 }
@@ -267,8 +296,8 @@ public class CreatingRoom extends AppCompatActivity {
         super.onResume();
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mBroadcastReciever, filter);
-        if(CheckPhatNhac!=0) {
-            mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.nhacnen2);
+        if (isMusicPlaying != 0) {
+            mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.background_music2);
             mediaPlayer.setLooping(true);
             mediaPlayer.start();
         }
@@ -278,13 +307,27 @@ public class CreatingRoom extends AppCompatActivity {
         btn_game1.setEnabled(false);
         btn_game2.setEnabled(false);
         btn_game3.setEnabled(false);
+        btn_game4.setEnabled(false);
 
         fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
         fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+        fl_btn_game4.setBackgroundResource(R.drawable.review_game3_disabled);
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(getApplicationContext(), ChessActivity.class));
+
+        Intent intent;
+
+        if (iv_game1Tick.getVisibility() == View.VISIBLE) {
+            intent = new Intent(CreatingRoom.this, CaroActivity.class);
+        } else if (iv_game2Tick.getVisibility() == View.VISIBLE) {
+            intent = new Intent(CreatingRoom.this, BattleShipPreActivity.class);
+        } else if (iv_game3Tick.getVisibility() == View.VISIBLE) {
+            intent = new Intent(CreatingRoom.this, SudokuActivity.class);
+        } else {
+            intent = new Intent(CreatingRoom.this, ChessActivity.class);
+        }
+        startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -344,11 +387,11 @@ public class CreatingRoom extends AppCompatActivity {
         super.onStop();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
-       CheckPhatNhac=1;
-        if(mediaPlayer!=null){
+        isMusicPlaying = 1;
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
-            mediaPlayer=null;
+            mediaPlayer = null;
         }
     }
 
@@ -357,10 +400,10 @@ public class CreatingRoom extends AppCompatActivity {
 
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
-        if(mediaPlayer!=null){
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
-            mediaPlayer=null;
+            mediaPlayer = null;
         }
         super.onDestroy();
     }
@@ -386,9 +429,25 @@ public class CreatingRoom extends AppCompatActivity {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
+<<<<<<< HEAD
                         Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ.", Toast.LENGTH_SHORT).show();
+=======
+                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
+                        if (Main.thisPlayer.isHost() == false) {
+                            if (StartingMenu.mConnection != null && mBTAdapter.isEnabled() == true) {
+                                StartingMenu.mConnection.Reconnect();
+                                if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
+                                    Toast.makeText(getApplicationContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Kết nối thất bại!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            StartingMenu.mConnection.StartConnection(mCreatingRoomHandler);
+                        }
+>>>>>>> master
                     } else {
-                        StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
+                        StartingMenu.mConnection.sendMessage("/&" + Main.thisPlayer.getPlayerName());
                         fl_p2Name.setVisibility(View.VISIBLE);
                     }
                     break;
@@ -402,15 +461,14 @@ public class CreatingRoom extends AppCompatActivity {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     StringBuilder stringBuilder = new StringBuilder();
-                    if(readMessage.indexOf("-8")!=-1){
+                    if (readMessage.indexOf("-8") != -1) {
                         StringBuilder stringBuilderRead = new StringBuilder();
-                        for(int i=2;i<readMessage.length();i++){
+                        for (int i = 2; i < readMessage.length(); i++) {
                             stringBuilderRead.append(readMessage.charAt(i));
                         }
-                        Arr_TinNhan.add(new GuiTinNhan(stringBuilderRead.toString(),"Đối thủ"));
+                        arr_message.add(new SendMessage(stringBuilderRead.toString(), "Đối thủ"));
                         adapter_listview.notifyDataSetChanged();
-                    }
-                    else {
+                    } else {
                         if (readMessage.contains("/&")) {
                             enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
                             if (Main.thisPlayer.isHost()) {
@@ -438,6 +496,7 @@ public class CreatingRoom extends AppCompatActivity {
                                     iv_game1Tick.setVisibility(View.VISIBLE);
                                     iv_game2Tick.setVisibility(View.INVISIBLE);
                                     iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    iv_game4Tick.setVisibility(View.INVISIBLE);
                                     break;
                                 case "untick1":
                                     iv_game1Tick.setVisibility(View.INVISIBLE);
@@ -446,6 +505,7 @@ public class CreatingRoom extends AppCompatActivity {
                                     iv_game1Tick.setVisibility(View.INVISIBLE);
                                     iv_game2Tick.setVisibility(View.VISIBLE);
                                     iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    iv_game4Tick.setVisibility(View.INVISIBLE);
                                     break;
                                 case "untick2":
                                     iv_game2Tick.setVisibility(View.INVISIBLE);
@@ -454,9 +514,20 @@ public class CreatingRoom extends AppCompatActivity {
                                     iv_game1Tick.setVisibility(View.INVISIBLE);
                                     iv_game2Tick.setVisibility(View.INVISIBLE);
                                     iv_game3Tick.setVisibility(View.VISIBLE);
+                                    iv_game4Tick.setVisibility(View.INVISIBLE);
                                     break;
                                 case "untick3":
                                     iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    break;
+
+                                case "tick4":
+                                    iv_game1Tick.setVisibility(View.INVISIBLE);
+                                    iv_game2Tick.setVisibility(View.INVISIBLE);
+                                    iv_game3Tick.setVisibility(View.INVISIBLE);
+                                    iv_game4Tick.setVisibility(View.VISIBLE);
+                                    break;
+                                case "untick4":
+                                    iv_game4Tick.setVisibility(View.INVISIBLE);
                                     break;
 
                             }
@@ -466,7 +537,6 @@ public class CreatingRoom extends AppCompatActivity {
                 case Messages.MESSAGE_DEVICE_NAME:
                     String mConnectedDeviceName = null;
                     mConnectedDeviceName = msg.getData().getString(Messages.DEVICE_NAME);
-                    StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
                     fl_p2Name.setVisibility(View.VISIBLE);
                     break;
 
@@ -485,15 +555,14 @@ public class CreatingRoom extends AppCompatActivity {
             String action = intent.getAction();
             Dialog dialog = new Dialog(context);
 
-            if(BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
                         BluetoothAdapter.ERROR);
                 if (BluetoothAdapter.STATE_OFF == state) {
                     Toast.makeText(context, "Bluetooth is Off. Return to waitting room", Toast.LENGTH_SHORT).show();
                     dialog.show();
                     dialog.setCancelable(false);
-                }
-                else if(BluetoothAdapter.STATE_ON == state){
+                } else if (BluetoothAdapter.STATE_ON == state) {
                     dialog.dismiss();
                     Intent intent1 = getIntent();
                     finish();

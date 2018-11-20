@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 public class FindingRoom extends AppCompatActivity {
 
-    int CheckPhatNhac=0;
+    int isMusicPlaying=0;
     Button btn_ok, btn_return, btn_setting, btn_refresh;
     public static final String DEVICE_ADDRESS = "device_address";
     private static final String DEVICE_CONNECTED_NAME = "device_name";
@@ -61,8 +61,8 @@ public class FindingRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AnhXa();
-        stopService(Main.NhacCho);
-        mediaPlayer = MediaPlayer.create(FindingRoom.this,R.raw.nhacnen2);
+        stopService(Main.backgroundMusic);
+        mediaPlayer = MediaPlayer.create(FindingRoom.this,R.raw.background_music2);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
         Main.click_button = new Click_button(FindingRoom.this);
@@ -206,9 +206,9 @@ public class FindingRoom extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Main.CheckNhac=1;
-        if(CheckPhatNhac!=0){
-            mediaPlayer = MediaPlayer.create(FindingRoom.this,R.raw.nhacnen2);
+        Main.isMusicExist=1;
+        if(isMusicPlaying!=0){
+            mediaPlayer = MediaPlayer.create(FindingRoom.this,R.raw.background_music2);
             mediaPlayer.setLooping(true);
             mediaPlayer.start();
         }
@@ -237,7 +237,7 @@ public class FindingRoom extends AppCompatActivity {
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
         }
-        //stopService(Main.NhacCho);
+        //stopService(Main.backgroundMusic);
         if(mediaPlayer!=null){
             mediaPlayer.stop();
             mediaPlayer.release();

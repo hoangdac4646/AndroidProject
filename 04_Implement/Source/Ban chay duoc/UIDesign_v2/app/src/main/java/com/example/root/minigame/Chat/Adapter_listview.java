@@ -13,11 +13,11 @@ import com.example.root.minigame.R;
 
 import java.util.List;
 
-public class Adapter_listview extends ArrayAdapter<GuiTinNhan> {
+public class Adapter_listview extends ArrayAdapter<SendMessage> {
     Context context;
     int resource;
-     List<GuiTinNhan> objects;
-    public Adapter_listview(Context context, int resource, @NonNull List<GuiTinNhan> objects) {
+     List<SendMessage> objects;
+    public Adapter_listview(Context context, int resource, @NonNull List<SendMessage> objects) {
         super(context, resource, objects);
         this.context = context;
         this.objects = objects;
@@ -35,14 +35,14 @@ public class Adapter_listview extends ArrayAdapter<GuiTinNhan> {
         if(view==null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.custom_listview,parent,false);
-            holder.ThietBi = view.findViewById(R.id.tv_tenthietbi);
+            holder.ThietBi = view.findViewById(R.id.tv_deviceName);
             holder.Noidung  = view.findViewById(R.id.tv_content);
             view.setTag(holder);
         }else{
             holder = (ViewHolder) view.getTag();
         }
-        holder.ThietBi.setText(objects.get(position).getTenThietBi());
-        holder.Noidung.setText(objects.get(position).getTinNhan());
+        holder.ThietBi.setText(objects.get(position).getdeviceName());
+        holder.Noidung.setText(objects.get(position).getmessage());
         if( !holder.ThietBi.getText().toString().equals("Me")){
             holder.ThietBi.setBackgroundResource(R.drawable.drawable_name2);
         }else{

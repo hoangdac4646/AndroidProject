@@ -13,7 +13,7 @@ public class Click_button {
         this.context = context;
     }
     public void PlayButtonSound(){
-        mediaPlayer = MediaPlayer.create(context, R.raw.pingping);
+        mediaPlayer = MediaPlayer.create(context, R.raw.buttonclick_sound);
         mediaPlayer.setVolume(100,100);
         mediaPlayer.start();
     }
