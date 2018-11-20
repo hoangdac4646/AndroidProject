@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,11 +40,14 @@ import com.example.root.minigame.BattleShip.BattleShipGameActivity;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.R;
+import com.example.root.minigame.Sound.Click_button;
+import com.example.root.minigame.Suduku.Soduku_Activity;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.Timer;
 
 public class ChessActivity extends AppCompatActivity {
 
@@ -75,7 +79,14 @@ public class ChessActivity extends AppCompatActivity {
     private Button btn_pause, btn_sound, btn_chat;
     private TextView txt_MyStep, txt_EnemyStep , txt_p1Name, txt_p2Name, txt_time;
     private Dialog dialog;
-
+    private int Countdown = 30;
+    private CountDownTimer countDownTimer;
+    private ArrayList<Integer> theWay = new ArrayList<>();
+    private ArrayList<Integer> stepToOurKing = new ArrayList<>();
+    private MediaPlayer mp;
+    private boolean isCheckMate = false;
+    private int posCheckUs;
+    private Cells King;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -86,6 +97,7 @@ public class ChessActivity extends AppCompatActivity {
             StartingMenu.mConnection.setHandle(mChessGameHandle);
         }
         inItWork();
+        Main.click_button = new Click_button(ChessActivity.this);
         initMap();
         AddArrayForCheck();
         if (Main.thisPlayer.isHost()) {
@@ -94,6 +106,15 @@ public class ChessActivity extends AppCompatActivity {
         }else{
             myColor = false;
             EnemyColor = true;
+        }
+        for(int i = 0 ; i < CellHasPieces.size(); i++){
+            if(CellHasPieces.get(i).getChessPieces() == KING && CellHasPieces.get(i).getColor() == myColor){
+                posOfKing = CellHasPieces.get(i).getIndex();
+                King = CellHasPieces.get(i);
+            }
+            if(CellHasPieces.get(i).getChessPieces() == KING && CellHasPieces.get(i).getColor() == EnemyColor){
+                posOfEnemyKing = CellHasPieces.get(i).getIndex();
+            }
         }
     }
 
@@ -112,6 +133,8 @@ public class ChessActivity extends AppCompatActivity {
         txt_p1Name.setText(Main.thisPlayer.getPlayerName());
         linear_row = new LinearLayout(this);
         linear_row.setWeightSum(8f);
+        mp = MediaPlayer.create(this,R.raw.chesspiece_move);
+        txt_p2Name.setText(CreatingRoom.enemyPlayer.getPlayerName());
         linear_row.setOrientation(LinearLayout.VERTICAL);
         linear_row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         chess_broad.addView(linear_row, new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -127,6 +150,21 @@ public class ChessActivity extends AppCompatActivity {
                 if(isBluetoothEnable == true){
                     StartingMenu.mConnection.sendMessage("pause");
                 }
+                final CountDownTimer pausecount = new CountDownTimer(30000,1000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        CheckBluetooth();
+                        if(isBluetoothEnable == true){
+                            StartingMenu.mConnection.sendMessage("resume");
+                            mdialog.dismiss();
+                        }
+                    }
+                }.start();
                 mdialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
@@ -134,11 +172,36 @@ public class ChessActivity extends AppCompatActivity {
                         CheckBluetooth();
                         if(isBluetoothEnable == true){
                             StartingMenu.mConnection.sendMessage("resume");
+                            pausecount.cancel();
                         }
                     }
                 });
             }
         });
+        countDownTimer = new CountDownTimer(30000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                Countdown--;
+                txt_time.setText(String.format("%02d : %02d", Countdown/60 , (Countdown % (60))));
+            }
+
+            @Override
+            public void onFinish() {
+                if(yourTurn == true && Countdown == 1){
+                    Countdown = 30;
+                    CheckBluetooth();
+                    if(mBTadapter.isEnabled()){
+                        StartingMenu.mConnection.sendMessage("timeout");
+                        Toast.makeText(ChessActivity.this, "Hết thời gian", Toast.LENGTH_SHORT).show();
+                        yourTurn = false;
+                    }
+                }
+                this.start();
+
+
+            }
+        };
+        countDownTimer.start();
 
     }
 
@@ -155,6 +218,7 @@ public class ChessActivity extends AppCompatActivity {
     }
 
     private void AddArrayForCheck() {
+
 
         CellHasPieces.add(new Cells(myColor, CASTLE, 63));
         CellHasPieces.add(new Cells(myColor, KNIGHT, 62));
@@ -178,46 +242,41 @@ public class ChessActivity extends AppCompatActivity {
 
         for (int i = 0; i < CellHasPieces.size(); i++) {
             cellHasPiecesInt.add(CellHasPieces.get(i).getIndex());
-            if (CellHasPieces.get(i).getChessPieces() == KING && CellHasPieces.get(i).getColor() == EnemyColor) {
-                posOfEnemyKing = CellHasPieces.get(i).getIndex();
-            } else if (CellHasPieces.get(i).getChessPieces() == KING && CellHasPieces.get(i).getColor() == myColor) {
-                posOfKing = CellHasPieces.get(i).getIndex();
-            }
             DrawPieces(CellHasPieces.get(i).getIndex(), CellHasPieces.get(i));
         }
 
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void initMap() {
-
-
         for (int i = 0; i < MAX_ROW; i++) {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1F));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT,1F);
+            row.setLayoutParams(layoutParams);
             row.setWeightSum(8F);
+
             for (int j = 0; j < MAX_COL; j++) {
 
                 final ImageView mbutton = new ImageView(this);
                 mbutton.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT , 1F));
 
                 mbutton.setId(i * MAX_ROW + j);
-
-
                 row.addView(mbutton);
                 mbutton.setBackground(null);
                 mbutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CountDown(60000);
                         if (yourTurn == true) {
                             if (!checkIsEnemy(mbutton.getId(), mOldIndex)) {
                                 isChessPiecesChecked(mbutton.getId());
                             }
                             if (chessmanIsClicked == false) { // o trong vua dc click
+                                hideTheWay();
                                 if (checkIsMoveable(mbutton.getId(), mOldIndex)) {
-                                    CheckBluetooth();
+
                                     if (isBluetoothEnable == true) {
                                         NearlyStep(mbutton.getId(), txt_MyStep );
                                         String temp = mbutton.getId() + "&" + mOldIndex;
@@ -226,28 +285,35 @@ public class ChessActivity extends AppCompatActivity {
                                     }
                                     if (Eatable) {
                                         EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(mOldIndex)), CellHasPieces.get(cellHasPiecesInt.indexOf(mbutton.getId())));
-                                        if (checkIsMoveable(posOfKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                        if(stepToOurKing.indexOf(mbutton.getId()) != -1){
+                                            isCheckMate = false;
+                                            stepToOurKing.clear();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
                                         }
+
+                                        CheckBluetooth();
+
                                     } else {
                                         DrawPieces(mbutton.getId(), CellHasPieces.get(cellHasPiecesInt.indexOf(mOldIndex)));
                                         cellHasPiecesInt.set(cellHasPiecesInt.indexOf(mOldIndex), mbutton.getId());
+                                        if(mOldIndex == posOfKing){
+                                            posOfKing = mbutton.getId();
+                                        }
                                         DrawPieces(mOldIndex, null);
                                         mOldIndex = -1;
-                                        if (checkIsMoveable(posOfKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                        isCheckMate = false;
+                                        if(stepToOurKing.indexOf(mbutton.getId()) != -1){
+                                            isCheckMate = false;
+                                            stepToOurKing.clear();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
                                             Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-
                                 }
                             }
-
                         }
                     }
                 });
@@ -261,8 +327,7 @@ public class ChessActivity extends AppCompatActivity {
             return false;
         }
         if (cellHasPiecesInt.indexOf(pos) != -1 && cellHasPiecesInt.indexOf(posofpieces) != -1) {
-            if (CellHasPieces.get(cellHasPiecesInt.indexOf(pos)).getColor() !=
-                    CellHasPieces.get(cellHasPiecesInt.indexOf(posofpieces)).getColor()) {
+            if (CellHasPieces.get(cellHasPiecesInt.indexOf(pos)).getColor() != CellHasPieces.get(cellHasPiecesInt.indexOf(posofpieces)).getColor()) {
                 chessmanIsClicked = false;
                 return true;
             }
@@ -270,15 +335,13 @@ public class ChessActivity extends AppCompatActivity {
         return false;
     }
 
-    private void CheckWin(){
 
-    }
+
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void DrawPieces(int position, Cells mcell) {
-        MediaPlayer.create(this,R.raw.chesspiece_move).start();
         int num_ROW = position / MAX_ROW;
         int num_COL = position - num_ROW * MAX_COL;
 
@@ -344,7 +407,6 @@ public class ChessActivity extends AppCompatActivity {
         CellHasPieces.get(cellHasPiecesInt.indexOf(mcell.getIndex())).setIndex(position);
         mcell.setIndex(position);
 
-
     }
 
 
@@ -359,26 +421,50 @@ public class ChessActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void EatEnemy(Cells mcell, Cells mcelled) {
+    private void checkIsWin(Cells mcelled) {
         if (mcelled.getChessPieces() == KING) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            if(myColor == mcelled.getColor()){
-                MediaPlayer.create(this,R.raw.defeat).start();
+            if (EnemyColor == mcelled.getColor()) {
+                isWin = true;
+                builder.setMessage("Xin chúc mừng "+ Main.thisPlayer.getPlayerName() +"! Quân của bạn đã chiến thắng\n Bạn Có Muốn Chơi Lại không?");
+                MediaPlayer.create(this, R.raw.victory).start();
+            } else {
+                MediaPlayer.create(this, R.raw.defeat).start();
+                builder.setMessage("Rất Tiếc "+ Main.thisPlayer.getPlayerName() +"! Quân của bạn đã thua\n Bạn Có Muốn Chơi Lại không?");
             }
-            else{
-                MediaPlayer.create(this,R.raw.victory).start();
-
-            }
-            if(mcelled.getColor() == true){
-                builder.setMessage("Xin chúc mừng BlackKing! Quân Black đã chiến thắng");
-            }
-            else {
-                builder.setMessage("Xin chúc mừng WhiteKing! Quân White đã chiến thắng");
-            }
+            countDownTimer.cancel();
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    CheckBluetooth();
+                    if(isBluetoothEnable){
+                        StartingMenu.mConnection.sendMessage("restart");
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                }
+            });
+            builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    CheckBluetooth();
+                    if(isBluetoothEnable){
+                        StartingMenu.mConnection.sendMessage("quit");
+                    }
+                    finish();
+                }
+            });
             builder.show();
-
         }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void EatEnemy(Cells mcell, Cells mcelled) {
+        Eatable = false;
+
+        checkIsWin(mcelled);
         int num_ROW = mcell.getIndex() / MAX_ROW;
         int num_COL = mcell.getIndex() - num_ROW * MAX_COL;
 
@@ -420,25 +506,41 @@ public class ChessActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private boolean checkIsMoveable(int position, int posOfChessPiece) {
-
-        boolean check = position > posOfChessPiece ? true : false; // black or white go
-        int compare;
-        if (check) {
-            compare = 1;// white go
-        } else {
-            compare = -1;// black go
+        if(isCheckMate && posOfChessPiece != posOfKing){
+            if(stepToOurKing.indexOf(position) == -1){
+                return false;
+            }
         }
+
+        int num_ROW = position / MAX_ROW;
+        int num_COL = position - num_ROW * MAX_COL;
+        int num_ROW_pieces = posOfChessPiece / MAX_ROW;
+        int num_COL_pieces = posOfChessPiece - num_ROW_pieces * MAX_COL;
+        boolean check_Row = num_ROW > num_ROW_pieces ? true : false; // black or white go
+        boolean check_Col = num_COL > num_COL_pieces ? true : false;
+        int compare_Row, compare_Col;
+        if(check_Row) compare_Row = 1;
+        else compare_Row = -1;
+        int compare = 1;
+        if(check_Col) compare_Col = 1;
+        else compare_Col = -1;
         for (int i = 0; i < CellHasPieces.size(); i++) {
             if (posOfChessPiece == CellHasPieces.get(i).getIndex()) {
                 Cells mcell = CellHasPieces.get(i);
+                if(isMyTeamMate(position, mcell.getColor())){
+                    return false;
+                }
                 switch (mcell.getChessPieces()) {
                     case PAWN: {
                         if (mcell.getColor()) {// pawn have to go straight
-                            compare = -1;// white
+                            compare_Row = -1;// white
                         } else {
-                            compare = 1;//black
+                            compare_Row = 1;//black
                         }
-                        if (posOfChessPiece + ((MAX_ROW + 1) * compare) == position || posOfChessPiece + ((MAX_ROW - 1) * compare) == position) {// eat enemy
+                        if(num_ROW_pieces + 1 * compare_Row == num_ROW && num_COL_pieces + 1*compare_Col == num_COL){
+                            if(position == posOfKing && isCheckMate){
+                                stepToOurKing.add(position);
+                            }
                             if (checkIsEnemy(posOfChessPiece, position)) {
                                 if (cellHasPiecesInt.indexOf(position) != -1) {
                                     Eatable = true;
@@ -446,24 +548,28 @@ public class ChessActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if ((posOfChessPiece + MAX_ROW * compare == position ||
-                                (posOfChessPiece + MAX_ROW * 2 * compare == position &&
-                                        position * compare <= ((MAX_ROW * MAX_COL) / 2) * compare))) { //if in emeny map, our pawm can't go double
-                            for (int k = 1; k <= (position - posOfChessPiece) * compare / MAX_ROW; k++) {// check is our checkpiece is being blocked
-                                if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * k * compare) != -1) {
+                        if ((num_ROW_pieces + 1 * compare_Row == num_ROW || (num_ROW_pieces + 2 * compare_Row == num_ROW && num_ROW * compare_Row <= 4 * compare_Row)) && num_COL == num_COL_pieces) {// eat enemy
+                            for (int k = 1; k <= (position - posOfChessPiece) * compare_Row / MAX_ROW; k++) {// check is our checkpiece is being blocked
+                                if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * k * compare_Row) != -1) {
+                                    Eatable = false;
                                     return false;
                                 }
                             }
                             Eatable = false;
                             return true;
                         }
+
                         break;
                     }//pawn
-                    case KNIGHT: {// free to go(kimochi)
-                        if (posOfChessPiece + (MAX_ROW * 2 + 1) * compare == position || posOfChessPiece + (MAX_ROW * 2 - 1) * compare == position
-                                || posOfChessPiece + (MAX_ROW + 2) * compare == position || posOfChessPiece + (MAX_ROW - 2) * compare == position) {
+                    case KNIGHT: {
+                        if((num_ROW_pieces + 2*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col == num_COL) ||
+                                (num_ROW_pieces + 1*compare_Row == num_ROW && num_COL_pieces + 2*compare_Col == num_COL)) {
+
                             if (checkIsEnemy(posOfChessPiece, position)) {
                                 if (cellHasPiecesInt.indexOf(position) != -1) {
+                                    if(position == posOfKing && isCheckMate){
+                                        stepToOurKing.add(position);
+                                    }
                                     Eatable = true;
                                     return true;
                                 }
@@ -474,12 +580,16 @@ public class ChessActivity extends AppCompatActivity {
                         break;
                     }//knight
                     case CASTLE: {
-                        for (int j = 0; j < MAX_COL; j++) {
-                            if (posOfChessPiece + j * compare == position
-                                    || posOfChessPiece + MAX_ROW * j * compare == position) {// the castle can go straight or across
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / MAX_ROW &&
-                                        (position - posOfChessPiece) * compare % MAX_ROW == 0; k++) {
-                                    if(posOfChessPiece + MAX_ROW * compare * k == position){
+                        for (int j = 1; j <= MAX_COL; j++) {
+                            int positonforcheck = posOfChessPiece + j*compare_Col;//check if on the way castle move has teammate then return
+                            if (isMyTeamMate(positonforcheck, mcell.getColor())) {
+                                break;
+                            }
+                            if (num_COL_pieces + j * compare_Col == num_COL && num_ROW == num_ROW_pieces) {
+                                for (int k = 1; k <= (position - posOfChessPiece) * compare_Col &&
+                                        (position - posOfChessPiece) * compare_Col % MAX_ROW != 0; k++) {
+
+                                    if(posOfChessPiece + k * compare_Col == position){
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -487,28 +597,36 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * compare * k) != -1) {// check is our checkpiece is being blocked
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Col) != -1) {
                                         Eatable = false;
                                         return false;
                                     }
-
                                 }
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare &&
-                                        (position - posOfChessPiece) * compare % MAX_ROW != 0; k++) {
 
-                                    if(posOfChessPiece + k * compare == position){
-                                        if (checkIsEnemy(posOfChessPiece, position)) {
-                                            if (cellHasPiecesInt.indexOf(position) != -1) {
-                                                Eatable = true;
-                                                return true;
-                                            }
+                                Eatable = false;
+                                return true;
+                            }
+                        }
+                        for(int j = 1; j <= MAX_ROW ; j++) {
+                            int positonforcheck = posOfChessPiece + j*MAX_ROW*compare_Row;//check if on the way castle move
+                            if (isMyTeamMate(positonforcheck, mcell.getColor())) {
+                                return false;
+                            }
+                            if (num_ROW_pieces + j * compare_Row == num_ROW && num_COL == num_COL_pieces) {
+                                for (int k = 1; k <= (position - posOfChessPiece) * compare_Row / MAX_ROW &&
+                                        (position - posOfChessPiece) * compare_Row % MAX_ROW == 0; k++) {
+                                    if (posOfChessPiece + MAX_ROW * compare_Row * k == position) {
+                                        if (cellHasPiecesInt.indexOf(position) != -1) {
+                                            Eatable = true;
+                                            return true;
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare) != -1) {
+
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * compare_Row * k) != -1) {// check is our checkpiece is being blocked
                                         return false;
                                     }
-
                                 }
+
                                 Eatable = false;
                                 return true;
                             }
@@ -516,11 +634,17 @@ public class ChessActivity extends AppCompatActivity {
                         break;
                     }//castle
                     case BISHOP: {
-                        for (int j = 0; j < MAX_ROW; j++) {
-                            if (posOfChessPiece + ((MAX_ROW + 1) * j) * compare == position || posOfChessPiece + ((MAX_ROW - 1) * j) * compare == position) {
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / (MAX_ROW + 1) && (position - posOfChessPiece) * compare % (MAX_ROW + 1) == 0; k++) {
 
-                                    if(posOfChessPiece + (MAX_ROW + 1) * k * compare == position){
+                        for(int j = 1; j <= MAX_ROW ; j++) {
+                            int posforcheck = posOfChessPiece + j * compare_Row * MAX_ROW + 1 * compare_Col * j;
+                            if (isMyTeamMate(posforcheck, mcell.getColor())) {
+                                return false;
+                            }
+                            if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col * j == num_COL) {
+
+                                for (int k = 1; k <= (position - posOfChessPiece)*compare_Row /(MAX_ROW - 1*compare_Col) && (position - posOfChessPiece) * compare_Row % (MAX_ROW - 1*compare_Col) == 0; k++) {
+
+                                    if(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k == position){
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -528,22 +652,7 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + (MAX_ROW + 1) * k * compare) != -1) {
-                                        return false;
-                                    }
-
-                                }
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / (MAX_ROW - 1) && (position - posOfChessPiece) * compare % (MAX_ROW - 1) == 0; k++) {
-
-                                    if(posOfChessPiece + (MAX_ROW - 1) * k * compare == position){
-                                        if (checkIsEnemy(posOfChessPiece, position)) {
-                                            if (cellHasPiecesInt.indexOf(position) != -1) {
-                                                Eatable = true;
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + (MAX_ROW - 1) * k * compare) != -1) {
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k) != -1) {
                                         return false;
                                     }
 
@@ -555,11 +664,17 @@ public class ChessActivity extends AppCompatActivity {
                         break;
                     }//bishop
                     case QUEEN: {
-                        for (int j = 0; j < MAX_ROW; j++) {
-                            if (posOfChessPiece + ((MAX_ROW + 1) * j) * compare == position || posOfChessPiece + ((MAX_ROW - 1) * j) * compare == position) {
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / (MAX_ROW + 1) && (position - posOfChessPiece) * compare % (MAX_ROW + 1) == 0; k++) {
+                        for (int j = 1; j <= MAX_COL; j++) {
+                            int positonforcheck = posOfChessPiece + j*compare_Col;//check if on the way castle move has teammate then return
+                            if (isMyTeamMate(positonforcheck, mcell.getColor())) {
+                                break;
+                            }
 
-                                    if(posOfChessPiece + (MAX_ROW + 1) * k * compare == position){
+                            if (num_COL_pieces + j * compare_Col == num_COL && num_ROW == num_ROW_pieces) {
+                                for (int k = 1; k <= (position - posOfChessPiece) * compare_Col &&
+                                        (position - posOfChessPiece) * compare_Col % MAX_ROW != 0; k++) {
+
+                                    if(posOfChessPiece + k * compare_Col == position){
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -567,36 +682,25 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + (MAX_ROW + 1) * k * compare) != -1) {
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Col) != -1) {
+                                        Eatable = false;
                                         return false;
                                     }
-
                                 }
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / (MAX_ROW - 1) && (position - posOfChessPiece) * compare % (MAX_ROW - 1) == 0; k++) {
-
-                                    if(posOfChessPiece + (MAX_ROW - 1) * k * compare == position){
-                                        if (checkIsEnemy(posOfChessPiece, position)) {
-                                            if (cellHasPiecesInt.indexOf(position) != -1) {
-                                                Eatable = true;
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + (MAX_ROW - 1) * k * compare) != -1) {
-                                        return false;
-                                    }
-
-                                }
-                                Eatable = false;//moveable
+                                Eatable = false;
                                 return true;
                             }
                         }
-                        for (int j = 0; j < MAX_COL; j++) {
-                            if (posOfChessPiece + j * compare == position
-                                    || posOfChessPiece + MAX_ROW * j * compare == position) {
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare / MAX_ROW &&
-                                        (position - posOfChessPiece) * compare % MAX_ROW == 0; k++) {
-                                    if(posOfChessPiece + MAX_ROW * compare * k == position){
+
+                        for(int j = 1; j <= MAX_ROW ; j++) {
+                            int positonforcheck = posOfChessPiece + j*MAX_ROW*compare_Row;//check if on the way castle move
+                            if (isMyTeamMate(positonforcheck, mcell.getColor())) {
+                                break;
+                            }
+                            if (num_ROW_pieces + j * compare_Row == num_ROW && num_COL == num_COL_pieces) {
+                                for (int k = 1; k <= (position - posOfChessPiece) * compare_Row / MAX_ROW &&
+                                        (position - posOfChessPiece) * compare_Row % MAX_ROW == 0; k++) {
+                                    if (posOfChessPiece + MAX_ROW * compare_Row * k == position) {
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -604,15 +708,25 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * compare * k) != -1) {
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + MAX_ROW * compare_Row * k) != -1) {// check is our checkpiece is being blocked
                                         return false;
                                     }
-
                                 }
-                                for (int k = 1; k <= (position - posOfChessPiece) * compare &&
-                                        (position - posOfChessPiece) * compare % MAX_ROW != 0; k++) {
+                                Eatable = false;
+                                return true;
+                            }
+                        }//like castle
+                        for(int j = 1; j <= MAX_ROW ; j++) {
+                            int posforcheck = posOfChessPiece + j * compare_Row * MAX_ROW + 1 * compare_Col * j;
+                            if (isMyTeamMate(posforcheck, mcell.getColor())) {
+                                return false;
+                            }
+                            if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col * j == num_COL) {
 
-                                    if(posOfChessPiece + k * compare == position){
+
+                                for (int k = 1; k <= (position - posOfChessPiece)*compare_Row /(MAX_ROW - 1*compare_Col) && (position - posOfChessPiece) * compare_Row % (MAX_ROW - 1*compare_Col) == 0; k++) {
+
+                                    if(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k == position){
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -620,21 +734,30 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare) != -1) {
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k) != -1) {
                                         return false;
                                     }
 
                                 }
-                                Eatable = false;//moveable
+                                Eatable = false;
                                 return true;
                             }
                         }
+
                         break;
                     }//queen
                     case KING: {
-                        if (posOfChessPiece + 1 * compare == position || posOfChessPiece + MAX_ROW * compare == position
-                                || posOfChessPiece + (MAX_ROW + 1) * compare == position || posOfChessPiece + (MAX_ROW - 1) * compare == position) {
-
+                        if ((num_ROW_pieces + 1 * compare_Row == num_ROW && num_COL_pieces == num_COL)||
+                                (num_COL_pieces + 1*compare_Col == num_COL && num_ROW_pieces == num_ROW) ||
+                                (num_ROW_pieces + 1*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col == num_COL)) {
+                            if(isCheckMate){
+                                if(stepToOurKing.indexOf(position) != -1){
+                                    return false;
+                                }
+                            }
+                            if (isMyTeamMate(position, mcell.getColor())) {
+                                return false;
+                            }
                             if (checkIsEnemy(posOfChessPiece, position)) {
                                 if (cellHasPiecesInt.indexOf(position) != -1) {
                                     Eatable = true;
@@ -646,7 +769,6 @@ public class ChessActivity extends AppCompatActivity {
                             }
 
                             Eatable = false;//moveable
-                            posOfKing = position;
                             return true;
                         }
                         break;
@@ -657,21 +779,71 @@ public class ChessActivity extends AppCompatActivity {
             }//if has cell
         }//for
         return false;
-    }//checkismoveable
+    }//checkismoveablec wdwdwdwdwdwdwdwdwd
 
-
-
-
-    public void isChessPiecesChecked(int pos){
-        if(cellHasPiecesInt.indexOf(pos) != -1 && CellHasPieces.get(cellHasPiecesInt.indexOf(pos)).getColor() == myColor){
-            chessmanIsClicked = true;
-            mOldIndex = pos;
-            return;
+    public boolean isMyTeamMate(int pos, boolean color){
+        if(cellHasPiecesInt.indexOf(pos) != -1 && color == CellHasPieces.get(cellHasPiecesInt.indexOf(pos)).getColor()) {
+            return true;
         }
-        chessmanIsClicked = false;
+        return false;
     }
 
 
+
+    public boolean isChessPiecesChecked(int pos){
+        if(cellHasPiecesInt.indexOf(pos) != -1 && CellHasPieces.get(cellHasPiecesInt.indexOf(pos)).getColor() == myColor ){
+            hideTheWay();
+            showTheWay(pos);
+            chessmanIsClicked = true;
+            mOldIndex = pos;
+            return true;
+        }
+        chessmanIsClicked = false;
+        return false;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void showTheWay(int pos) {
+
+        for(int i = 0; i < MAX_COL* MAX_ROW; i++){
+            if(checkIsMoveable(i, pos) && i != pos){
+                int num_ROW = i / MAX_ROW;
+                int num_COL = i - num_ROW * MAX_COL;
+                LinearLayout row = (LinearLayout) linear_row.getChildAt(num_ROW);
+                ImageView mButton = (ImageView) row.getChildAt(num_COL);
+                mButton.setAlpha(0.5F);
+                if(Eatable){
+
+                    mButton.setBackgroundColor(Color.parseColor("#FFFF6A5F"));
+
+                }else{
+                    if(checkIsMoveable(posOfKing , i)){
+                        if(stepToOurKing.indexOf(i) != -1){
+                            mButton.setBackgroundColor(Color.parseColor("#00FF00"));
+                        }
+                    }
+                    else{
+                        mButton.setBackgroundColor(Color.parseColor("#00FF00"));
+                    }
+                }
+                theWay.add(i);
+            }
+        }
+    }//dayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void hideTheWay(){
+        for(int i = 0; i < theWay.size();i++ ){
+            int num_ROW = theWay.get(i) / MAX_ROW;
+            int num_COL = theWay.get(i) - num_ROW * MAX_COL;
+            LinearLayout row = (LinearLayout) linear_row.getChildAt(num_ROW);
+            ImageView mButton = (ImageView) row.getChildAt(num_COL);
+            mButton.setAlpha(1F);
+            mButton.setBackground(null);
+        }
+    }
+
+    //xuat ra buoc đi gần nhất
     private void NearlyStep(int pos , TextView view){
         int num_ROW = pos / MAX_ROW;
         int num_COL = pos - num_ROW * MAX_COL;
@@ -706,29 +878,109 @@ public class ChessActivity extends AppCompatActivity {
                 break;
 
         }
-        temp += num_ROW;
+        temp += (num_ROW +1);
         view.setText(temp);
     }
 
-    private boolean CountDown(int time){
-        new CountDownTimer(time, 1000) {
+    private boolean checkmate(Cells mcell) {
 
-            public void onTick(long millisUntilFinished) {
+        if (posOfKing == -1) {
+            return false;
+        }
 
-                txt_time.setText("0" + millisUntilFinished / 60000 + ":" + millisUntilFinished/1000);
-            }
+        int position = mcell.getIndex();
 
-            public void onFinish() {
-                yourTurn = false;
-                CheckBluetooth();
-                if(isBluetoothEnable == true){
-                    StartingMenu.mConnection.sendMessage("timeout");
+        int num_ROW = posOfKing / MAX_ROW;
+        int num_COL = posOfKing - num_ROW * MAX_COL;
+        int num_ROW_pieces = position / MAX_ROW;
+        int num_COL_pieces = position - num_ROW_pieces * MAX_COL;
+
+        boolean check_Row = num_ROW > num_ROW_pieces ? true : false;
+        boolean check_Col = num_COL > num_COL_pieces ? true : false;
+        int compare_Row, compare_Col;
+        if(check_Row) compare_Row = 1;
+        else compare_Row = -1;
+        int compare = 1;
+        if(check_Col) compare_Col = 1;
+        else compare_Col = -1;
+        switch (mcell.getChessPieces()) {
+            case PAWN:
+                stepToOurKing.add(position);
+                return true;
+            case KNIGHT:
+                stepToOurKing.add(position);
+                break;
+            case CASTLE:
+
+                for (int j = 0; j < MAX_COL ; j++) {
+                    if(num_COL_pieces + j * compare_Col == num_COL && num_ROW == num_ROW_pieces){
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + k * compare_Col + num_ROW_pieces*MAX_ROW);
+                        }
+                        return true;
+                    }
                 }
-            }
-        }.start();
+                for (int j = 0; j < MAX_ROW ; j++) {
+                    if(num_ROW_pieces + j * compare_Row == num_ROW && num_COL == num_COL_pieces){
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + (num_ROW_pieces + k * compare_Row)*MAX_ROW);
+                        }
+                        return true;
+                    }
+                }
+                break;
+            case BISHOP:
+                for (int j = 0; j < MAX_ROW; j++) {
+                    if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col * j == num_COL) {
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + 1*compare_Col * k + (num_ROW_pieces + k*compare_Row)* MAX_ROW);
+                        }
+                        return true;
+                    }
+                }
 
-        return true;
+                break;
+            case QUEEN:
+                for (int j = 0; j < MAX_COL ; j++) {
+                    if(num_COL_pieces + j * compare_Col == num_COL && num_ROW == num_ROW_pieces){
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + k * compare_Col + num_ROW_pieces*MAX_ROW);
+                        }
+                        return true;
+                    }
+                }
+                for (int j = 0; j < MAX_ROW ; j++) {
+                    if(num_ROW_pieces + j * compare_Row == num_ROW && num_COL == num_COL_pieces){
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + (num_ROW_pieces + k * compare_Row)*MAX_ROW);
+                        }
+                        return true;
+                    }
+                }
+                for (int j = 0; j < MAX_ROW; j++) {
+                    if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col * j == num_COL) {
+                        for(int k = 0 ; k < j ; k++){
+                            stepToOurKing.add(num_COL_pieces + 1*compare_Col * k + (num_ROW_pieces + k*compare_Row)* MAX_ROW);
+                        }
+                        return true;
+                    }
+                }
+                break;
+            case KING:
+                if ((num_ROW_pieces + 1 * compare_Row == num_ROW && num_COL_pieces == num_COL)||
+                        (num_COL_pieces + 1*compare_Col == num_COL && num_ROW_pieces == num_ROW) ||
+                        (num_ROW_pieces + 1*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col == num_COL)) {
+                    stepToOurKing.add(position);
+                    return true;
+                }
+                break;
+        }
+
+
+        return false;
     }
+
+
 
 
 
@@ -739,24 +991,13 @@ public class ChessActivity extends AppCompatActivity {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
-                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
-                        if (Main.thisPlayer.isHost() == false) {
-                            if (StartingMenu.mConnection != null && mBTadapter.isEnabled() == true) {
-                                StartingMenu.mConnection.Reconnect();
-                                if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
-                                    Toast.makeText(getApplicationContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Kết nối thất bại!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        } else {
-                            StartingMenu.mConnection.StartConnection(mChessGameHandle);
-                        }
+                        Toast.makeText(getApplication(), "Chess: Bạn Đã Mất Kết Nối Tới Phòng Chờ.", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case Messages.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     String writeMessage = new String(writeBuf);
+                    Countdown = 30;
 
                     break;
                 case Messages.MESSAGE_READ:
@@ -768,24 +1009,22 @@ public class ChessActivity extends AppCompatActivity {
                             int oldpos = Integer.parseInt(mes[1]);
                             NearlyStep(possition, txt_EnemyStep);
                             if (checkIsMoveable(possition, oldpos)) {
+                                Countdown = 30;
                                 if (Eatable) {
                                     EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)), CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
-                                        Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
-                                    }
-                                    if (checkIsMoveable(posOfEnemyKing, possition) && Eatable == true) {
-                                        Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
+                                        isCheckMate = true;
+                                        checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     }
                                 } else {
-                                    DrawPieces(possition, CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)));
-                                    cellHasPiecesInt.set(cellHasPiecesInt.indexOf(oldpos), possition);
-                                    DrawPieces(oldpos, null);
-                                    oldpos = -1;
+                                        DrawPieces(possition, CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)));
+                                        cellHasPiecesInt.set(cellHasPiecesInt.indexOf(oldpos), possition);
+                                        DrawPieces(oldpos, null);
                                     if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
-                                        Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
-                                    }
-                                    if (checkIsMoveable(posOfEnemyKing, possition) && Eatable == true) {
-                                        Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
+                                        isCheckMate = true;
+                                        checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     }
                                 }
                             }
@@ -793,20 +1032,27 @@ public class ChessActivity extends AppCompatActivity {
 
                         } catch (NumberFormatException e) {
                             if(readMessage.equals("pause")){
+                                countDownTimer.cancel();
                                 dialog.show();
                                 dialog.setCancelable(false);
                             }
-                            if(readMessage.equals("resume")){
+                            else if(readMessage.equals("resume")){
+                                countDownTimer.start();
                                 dialog.dismiss();
                             }
-                            if(readMessage.equals("timeout")){
-                                CountDown(60000);
+                            else if(readMessage.equals("timeout")){
+                                Countdown = 30;
                                 yourTurn = true;
                             }
+                            else if(readMessage.equals("restart")){
+
+                            }
+                            else if(readMessage.equals("quit")){
+                                Toast.makeText(ChessActivity.this, CreatingRoom.enemyPlayer.getPlayerName() + " đã thoát game!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            //tin nhan day neeeeeeeeeeeeeeeeee ^^
                         }
-
-
-
                 case Messages.MESSAGE_DEVICE_NAME:
                     break;
 

@@ -362,7 +362,6 @@ public class CreatingRoom extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer=null;
         }
-
         super.onDestroy();
     }
 
@@ -387,20 +386,7 @@ public class CreatingRoom extends AppCompatActivity {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
-                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
-                        if(Main.thisPlayer.isHost() == false){
-                            if(StartingMenu.mConnection != null && mBTAdapter.isEnabled() == true){
-                                StartingMenu.mConnection.Reconnect();
-                                if(StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED){
-                                    Toast.makeText(getApplicationContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
-                                }else{
-                                    Toast.makeText(getApplicationContext(), "Kết nối thất bại!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                        else{
-                            StartingMenu.mConnection.StartConnection(mCreatingRoomHandler);
-                        }
+                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ.", Toast.LENGTH_SHORT).show();
                     } else {
                         StartingMenu.mConnection.sendMessage("/&"+Main.thisPlayer.getPlayerName());
                         fl_p2Name.setVisibility(View.VISIBLE);
