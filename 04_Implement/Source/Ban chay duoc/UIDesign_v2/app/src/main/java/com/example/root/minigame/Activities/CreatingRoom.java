@@ -111,11 +111,11 @@ public class CreatingRoom extends AppCompatActivity {
 
         btn_ready = (Button) findViewById(R.id.btn_ok);
         btn_return = (Button) findViewById(R.id.btn_return);
+        btn_setting = (Button) findViewById(R.id.btn_setting);
         btn_game1 = (Button) findViewById(R.id.btn_game1);
         btn_game2 = (Button) findViewById(R.id.btn_game2);
         btn_game3 = (Button) findViewById(R.id.btn_game3);
         btn_game4 = (Button) findViewById(R.id.btn_game4);
-        btn_setting = (Button) findViewById(R.id.btn_setting);
 
         iv_p1Ready = (ImageView) findViewById(R.id.iv_p1Ready);
         iv_p2Ready = (ImageView) findViewById(R.id.iv_p2Ready);
@@ -250,32 +250,61 @@ public class CreatingRoom extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Main.click_button.PlayButtonSound();
+                boolean checkReady = true;
                 if (Main.thisPlayer.isHost()) {
                     if (iv_game1Tick.getVisibility() == View.INVISIBLE && iv_game2Tick.getVisibility() == View.INVISIBLE && iv_game3Tick.getVisibility() == View.INVISIBLE && iv_game4Tick.getVisibility() == View.INVISIBLE) {
                         Toast.makeText(CreatingRoom.this, "Bạn chưa chọn game!", Toast.LENGTH_SHORT).show();
                         return;
-                    } else iv_p1Ready.setVisibility(View.VISIBLE);
+                    } else if (iv_p1Ready.getVisibility() == View.INVISIBLE) {
+                        iv_p1Ready.setVisibility(View.VISIBLE);
+                    } else if (iv_p1Ready.getVisibility() == View.VISIBLE) {
+                        checkReady = false;
+                        iv_p1Ready.setVisibility(View.INVISIBLE);
+                    }
                 } else {
-                    iv_p2Ready.setVisibility(View.VISIBLE);
+                    if (iv_p2Ready.getVisibility() == View.INVISIBLE) {
+                        iv_p2Ready.setVisibility(View.VISIBLE);
+                    } else {
+                        checkReady = false;
+                        iv_p2Ready.setVisibility(View.INVISIBLE);
+                    }
                 }
 
-                if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
-                    StartingMenu.mConnection.sendMessage("Start");
-                    StartingGame();
-                } else {
-                    StartingMenu.mConnection.sendMessage("Ready");
-                    {
-                        btn_game1.setEnabled(false);
-                        btn_game2.setEnabled(false);
-                        btn_game3.setEnabled(false);
-                        btn_game4.setEnabled(false);
+                if (checkReady) {
 
-                        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
-                        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
-                        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
-                        fl_btn_game4.setBackgroundResource(R.drawable.review_game3_disabled);
+                    btn_game1.setEnabled(false);
+                    btn_game2.setEnabled(false);
+                    btn_game3.setEnabled(false);
+                    btn_game4.setEnabled(false);
+
+                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
+                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
+                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
+                    fl_btn_game4.setBackgroundResource(R.drawable.review_game4_disabled);
+
+
+                    if (iv_p1Ready.getVisibility() == View.VISIBLE && iv_p2Ready.getVisibility() == View.VISIBLE) {
+                        StartingMenu.mConnection.sendMessage("Start");
+                        StartingGame();
+                    } else {
+                        StartingMenu.mConnection.sendMessage("Ready");
+                        btn_ready.setBackgroundResource(R.drawable.unready_press);
+                        Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(CreatingRoom.this, "Vui lòng chờ đối thủ sẵn sàng!", Toast.LENGTH_SHORT).show();
+                } else {
+                    btn_game1.setEnabled(true);
+                    btn_game2.setEnabled(true);
+                    btn_game3.setEnabled(true);
+                    btn_game4.setEnabled(true);
+
+                    fl_btn_game1.setBackgroundResource(R.drawable.review_game1_room);
+                    fl_btn_game2.setBackgroundResource(R.drawable.review_game2_room);
+                    fl_btn_game3.setBackgroundResource(R.drawable.review_game3_room);
+                    fl_btn_game4.setBackgroundResource(R.drawable.review_game4_room);
+
+                    btn_ready.setBackgroundResource(R.drawable.ready_press);
+
+                    StartingMenu.mConnection.sendMessage("UnReady");
                 }
 
             }
@@ -291,17 +320,6 @@ public class CreatingRoom extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mBroadcastReciever, filter);
-        if (isMusicPlaying != 0) {
-            mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.background_music2);
-            mediaPlayer.setLooping(true);
-            mediaPlayer.start();
-        }
-    }
 
     private void StartingGame() {
         btn_game1.setEnabled(false);
@@ -312,22 +330,28 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game1.setBackgroundResource(R.drawable.review_game1_disabled);
         fl_btn_game2.setBackgroundResource(R.drawable.review_game2_disabled);
         fl_btn_game3.setBackgroundResource(R.drawable.review_game3_disabled);
-        fl_btn_game4.setBackgroundResource(R.drawable.review_game3_disabled);
+        fl_btn_game4.setBackgroundResource(R.drawable.review_game4_disabled);
 
         Toast.makeText(CreatingRoom.this, "Trận đấu sắp bắt đầu!", Toast.LENGTH_SHORT).show();
 
-        Intent intent;
+        iv_p1Ready.setVisibility(View.INVISIBLE);
+        iv_p2Ready.setVisibility(View.INVISIBLE);
 
         if (iv_game1Tick.getVisibility() == View.VISIBLE) {
-            intent = new Intent(CreatingRoom.this, CaroActivity.class);
+            Intent intent = new Intent(CreatingRoom.this, CaroActivity.class);
+            startActivity(intent);
         } else if (iv_game2Tick.getVisibility() == View.VISIBLE) {
-            intent = new Intent(CreatingRoom.this, BattleShipPreActivity.class);
+            Intent intent = new Intent(CreatingRoom.this, BattleShipPreActivity.class);
+            startActivity(intent);
         } else if (iv_game3Tick.getVisibility() == View.VISIBLE) {
-            intent = new Intent(CreatingRoom.this, SudokuActivity.class);
-        } else {
-            intent = new Intent(CreatingRoom.this, ChessActivity.class);
+            Intent intent = new Intent(CreatingRoom.this, SudokuActivity.class);
+            startActivity(intent);
+        } else if (iv_game4Tick.getVisibility() == View.VISIBLE) {
+            Intent intent = new Intent(CreatingRoom.this, ChessActivity.class);
+            startActivity(intent);
         }
-        startActivity(intent);
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -397,7 +421,7 @@ public class CreatingRoom extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-
+        super.onDestroy();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTAdapter.setName(StartingMenu.mBTAdapterDefaultName);
         if (mediaPlayer != null) {
@@ -406,7 +430,8 @@ public class CreatingRoom extends AppCompatActivity {
             mediaPlayer = null;
         }
 
-        super.onDestroy();
+        Main.thisPlayer.setHostStatus(false);
+        enemyPlayer.setHostStatus(false);
     }
 
     @Override
@@ -414,6 +439,45 @@ public class CreatingRoom extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(mBroadcastReciever);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mBroadcastReciever, filter);
+        if (isMusicPlaying != 0) {
+            mediaPlayer = MediaPlayer.create(CreatingRoom.this, R.raw.background_music2);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.start();
+        }
+
+        btn_game1.setEnabled(true);
+        btn_game2.setEnabled(true);
+        btn_game3.setEnabled(true);
+        btn_game4.setEnabled(true);
+
+        fl_btn_game1.setBackgroundResource(R.drawable.review_game1_room);
+        fl_btn_game2.setBackgroundResource(R.drawable.review_game2_room);
+        fl_btn_game3.setBackgroundResource(R.drawable.review_game3_room);
+        fl_btn_game4.setBackgroundResource(R.drawable.review_game4_room);
+        btn_ready.setBackgroundResource(R.drawable.ready_press);
+
+        if (Main.thisPlayer.isHost()) {
+            if (iv_p1Ready.getVisibility() == View.VISIBLE) {
+
+                iv_p1Ready.setVisibility(View.INVISIBLE);
+
+            }
+        } else if (iv_p2Ready.getVisibility() == View.VISIBLE) {
+
+            iv_p2Ready.setVisibility(View.INVISIBLE);
+
+        }
+
+        StartingMenu.mConnection.sendMessage("UnReady");
+
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -431,7 +495,7 @@ public class CreatingRoom extends AppCompatActivity {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
                         Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
-                        if (Main.thisPlayer.isHost() == false) {
+                        if (!Main.thisPlayer.isHost()) {
                             if (StartingMenu.mConnection != null && mBTAdapter.isEnabled() == true) {
                                 StartingMenu.mConnection.Reconnect();
                                 if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
@@ -445,7 +509,6 @@ public class CreatingRoom extends AppCompatActivity {
                         }
                     } else {
                         StartingMenu.mConnection.sendMessage("/&" + Main.thisPlayer.getPlayerName());
-                        fl_p2Name.setVisibility(View.VISIBLE);
                     }
                     break;
                 case Messages.MESSAGE_WRITE:
@@ -465,69 +528,76 @@ public class CreatingRoom extends AppCompatActivity {
                         }
                         arr_message.add(new SendMessage(stringBuilderRead.toString(), "Đối thủ"));
                         adapter_listview.notifyDataSetChanged();
-                    } else {
-                        if (readMessage.contains("/&")) {
-                            enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
-                            if (Main.thisPlayer.isHost()) {
-                                enemyPlayer.setHostStatus(false);
-                                txt_p2Name.setText(enemyPlayer.getPlayerName());
-                            } else {
-                                txt_p1Name.setText(enemyPlayer.getPlayerName());
-                                enemyPlayer.setHostStatus(true);
-                            }
+                    }
+                    if (readMessage.contains("/&")) {
+                        enemyPlayer.setPlayerName(readMessage.split("/&")[1]);
+                        if (Main.thisPlayer.isHost()) {
+                            enemyPlayer.setHostStatus(false);
+                            fl_p2Name.setVisibility(View.VISIBLE);
+                            txt_p2Name.setText(enemyPlayer.getPlayerName());
+                        } else {
+                            txt_p1Name.setText(enemyPlayer.getPlayerName());
+                            fl_p1Name.setVisibility(View.VISIBLE);
+                            enemyPlayer.setHostStatus(true);
                         }
-                        if (readMessage.equals("Ready")) {
-                            if (Main.thisPlayer.isHost()) {
-                                iv_p2Ready.setVisibility(View.VISIBLE);
-                            } else {
-                                iv_p1Ready.setVisibility(View.VISIBLE);
-                            }
-                        } else if (readMessage.equals("Start")) {
-                            iv_p1Ready.setVisibility(View.VISIBLE);
+                    }
+                    if (readMessage.equals("Ready")) {
+                        if (Main.thisPlayer.isHost()) {
                             iv_p2Ready.setVisibility(View.VISIBLE);
-                            StartingGame();
+                        } else {
+                            iv_p1Ready.setVisibility(View.VISIBLE);
                         }
-                        if (!Main.thisPlayer.isHost()) {
-                            switch (readMessage) {
-                                case "tick1":
-                                    iv_game1Tick.setVisibility(View.VISIBLE);
-                                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                                    iv_game4Tick.setVisibility(View.INVISIBLE);
-                                    break;
-                                case "untick1":
-                                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                                    break;
-                                case "tick2":
-                                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                                    iv_game2Tick.setVisibility(View.VISIBLE);
-                                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                                    iv_game4Tick.setVisibility(View.INVISIBLE);
-                                    break;
-                                case "untick2":
-                                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                                    break;
-                                case "tick3":
-                                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                                    iv_game3Tick.setVisibility(View.VISIBLE);
-                                    iv_game4Tick.setVisibility(View.INVISIBLE);
-                                    break;
-                                case "untick3":
-                                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                                    break;
+                    } else if (readMessage.equals("UnReady")) {
+                        if (Main.thisPlayer.isHost()) {
+                            iv_p2Ready.setVisibility(View.INVISIBLE);
+                        } else {
+                            iv_p1Ready.setVisibility(View.INVISIBLE);
+                        }
+                    } else if (readMessage.equals("Start")) {
+                        iv_p1Ready.setVisibility(View.VISIBLE);
+                        iv_p2Ready.setVisibility(View.VISIBLE);
+                        StartingGame();
+                    }
+                    if (!Main.thisPlayer.isHost()) {
+                        switch (readMessage) {
+                            case "tick1":
+                                iv_game1Tick.setVisibility(View.VISIBLE);
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                iv_game4Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "untick1":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "tick2":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                iv_game2Tick.setVisibility(View.VISIBLE);
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                iv_game4Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "untick2":
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "tick3":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                iv_game3Tick.setVisibility(View.VISIBLE);
+                                iv_game4Tick.setVisibility(View.INVISIBLE);
+                                break;
+                            case "untick3":
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                break;
 
-                                case "tick4":
-                                    iv_game1Tick.setVisibility(View.INVISIBLE);
-                                    iv_game2Tick.setVisibility(View.INVISIBLE);
-                                    iv_game3Tick.setVisibility(View.INVISIBLE);
-                                    iv_game4Tick.setVisibility(View.VISIBLE);
-                                    break;
-                                case "untick4":
-                                    iv_game4Tick.setVisibility(View.INVISIBLE);
-                                    break;
+                            case "tick4":
+                                iv_game1Tick.setVisibility(View.INVISIBLE);
+                                iv_game2Tick.setVisibility(View.INVISIBLE);
+                                iv_game3Tick.setVisibility(View.INVISIBLE);
+                                iv_game4Tick.setVisibility(View.VISIBLE);
+                                break;
+                            case "untick4":
+                                iv_game4Tick.setVisibility(View.INVISIBLE);
+                                break;
 
-                            }
                         }
                     }
                     break;

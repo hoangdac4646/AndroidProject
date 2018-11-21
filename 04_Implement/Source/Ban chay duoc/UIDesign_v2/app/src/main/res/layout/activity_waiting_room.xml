@@ -412,7 +412,7 @@
                         android:id="@+id/fl_btn_game4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/review_game3_room">
+                        android:background="@drawable/review_game4_room">
 
                         <Button
                             android:id="@+id/btn_game4"

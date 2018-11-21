@@ -227,10 +227,10 @@ public class ChessActivity extends AppCompatActivity {
                                     if (Eatable) {
                                         EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(mOldIndex)), CellHasPieces.get(cellHasPiecesInt.indexOf(mbutton.getId())));
                                         if (checkIsMoveable(posOfKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChessActivity.this, "Chiếu tướng rồi. AHIHI", Toast.LENGTH_SHORT).show();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChessActivity.this, "Chiếu tướng rồi. AHIHI", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
                                         DrawPieces(mbutton.getId(), CellHasPieces.get(cellHasPiecesInt.indexOf(mOldIndex)));
@@ -238,10 +238,10 @@ public class ChessActivity extends AppCompatActivity {
                                         DrawPieces(mOldIndex, null);
                                         mOldIndex = -1;
                                         if (checkIsMoveable(posOfKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChessActivity.this, "Chiếu tướng rồi. AHIHI", Toast.LENGTH_SHORT).show();
                                         }
                                         if (checkIsMoveable(posOfEnemyKing, mbutton.getId()) && Eatable == true) {
-                                            Toast.makeText(ChessActivity.this, "Chieu Cmn Tướng Rồi. AHIHI", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(ChessActivity.this, "Chiếu tướng rồi. AHIHI", Toast.LENGTH_SHORT).show();
                                         }
                                     }
 

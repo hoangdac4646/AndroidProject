@@ -20,7 +20,7 @@
                 android:id="@+id/chess_broad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/chess_board">
+                android:background="@drawable/background_game4_map">
 
             </TableLayout>
     </LinearLayout>
@@ -83,7 +83,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
-                android:layout_height="wrap_content"></LinearLayout>
+                android:layout_height="wrap_content"/>
             <TextView
                 android:textColor="#FFFFFF"
                 android:gravity="center"
@@ -93,7 +93,8 @@
                 android:background="@drawable/tag_playername1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
-        </LinearLayout>//name
+        </LinearLayout>
+
         <LinearLayout
             android:weightSum="2"
             android:layout_weight="1"
