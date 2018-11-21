@@ -67,7 +67,7 @@
             <TextView
                 android:textSize="25sp"
                 android:textColor="#FFFFFF"
-                android:text="01:00"
+                android:text="00:00"
                 android:gravity="center"
                 android:id="@+id/txt_time"
                 android:layout_weight="1"

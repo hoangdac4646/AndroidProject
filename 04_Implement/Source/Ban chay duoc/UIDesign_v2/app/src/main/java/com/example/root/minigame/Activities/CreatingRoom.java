@@ -432,6 +432,7 @@ public class CreatingRoom extends AppCompatActivity {
 
         Main.thisPlayer.setHostStatus(false);
         enemyPlayer.setHostStatus(false);
+        super.onDestroy();
     }
 
     @Override
@@ -507,6 +508,7 @@ public class CreatingRoom extends AppCompatActivity {
                         } else {
                             StartingMenu.mConnection.StartConnection(mCreatingRoomHandler);
                         }
+                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ.", Toast.LENGTH_SHORT).show();
                     } else {
                         StartingMenu.mConnection.sendMessage("/&" + Main.thisPlayer.getPlayerName());
                     }
