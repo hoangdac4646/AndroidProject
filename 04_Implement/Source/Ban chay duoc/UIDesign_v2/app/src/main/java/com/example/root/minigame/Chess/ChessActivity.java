@@ -1008,6 +1008,7 @@ public class ChessActivity extends AppCompatActivity {
                 case Messages.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     String readMessage = new String(readBuf, 0, msg.arg1);
+<<<<<<< HEAD
                         try {
                             String[] mes = readMessage.split("&");
                             int possition = Integer.parseInt(mes[0]);
@@ -1032,34 +1033,60 @@ public class ChessActivity extends AppCompatActivity {
                                         isCheckMate = true;
                                         checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                     }
+=======
+                    try {
+                        String[] mes = readMessage.split("&");
+                        int possition = Integer.parseInt(mes[0]);
+                        int oldpos = Integer.parseInt(mes[1]);
+                        NearlyStep(possition, txt_EnemyStep);
+                        if (checkIsMoveable(possition, oldpos)) {
+                            if (Eatable) {
+                                EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)), CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
+                                if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
+                                    sound.check_mate();
+                                    Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
+                                    isCheckMate = true;
+                                    checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
+                                }
+                            } else {
+                                DrawPieces(possition, CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)));
+                                cellHasPiecesInt.set(cellHasPiecesInt.indexOf(oldpos), possition);
+                                DrawPieces(oldpos, null);
+                                if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
+                                    sound.check_mate();
+                                    Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
+                                    isCheckMate = true;
+                                    checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
+>>>>>>> master
                                 }
                             }
-                            yourTurn = true;
-                            countDownTimer.start();
-                            Countdown = 30;
-
-                        } catch (NumberFormatException e) {
-                            if(readMessage.equals("pause")){
-                                countDownTimer.cancel();
-                                dialog.show();
-                                dialog.setCancelable(false);
-                            }
-                            else if(readMessage.equals("resume")){
-                                countDownTimer.start();
-                                dialog.dismiss();
-                            }
-                            else if(readMessage.equals("timeout")){
-                                yourTurn = true;
-                            }
-                            else if(readMessage.equals("restart")){
-
-                            }
-                            else if(readMessage.equals("quit")){
-                                Toast.makeText(ChessActivity.this, CreatingRoom.enemyPlayer.getPlayerName() + " đã thoát game!", Toast.LENGTH_SHORT).show();
-                            }
-
-                            //tin nhan day neeeeeeeeeeeeeeeeee ^^
                         }
+                        yourTurn = true;
+                        countDownTimer.start();
+                        Countdown = 30;
+
+                    } catch (NumberFormatException e) {
+                        if(readMessage.equals("pause")){
+                            countDownTimer.cancel();
+                            dialog.show();
+                            dialog.setCancelable(false);
+                        }
+                        else if(readMessage.equals("resume")){
+                            countDownTimer.start();
+                            dialog.dismiss();
+                        }
+                        else if(readMessage.equals("timeout")){
+                            yourTurn = true;
+                        }
+                        else if(readMessage.equals("restart")){
+
+                        }
+                        else if(readMessage.equals("quit")){
+                            Toast.makeText(ChessActivity.this, CreatingRoom.enemyPlayer.getPlayerName() + " đã thoát game!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        //tin nhan day neeeeeeeeeeeeeeeeee ^^
+                    }
                 case Messages.MESSAGE_DEVICE_NAME:
                     break;
 

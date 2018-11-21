@@ -274,11 +274,14 @@ public class FindingRoom extends AppCompatActivity {
                                 case "Caro":
                                     Names.add(new Room(R.drawable.review_game1_rounded, dName[0], dName[1]));
                                     break;
+                                case "Tàu chiến":
+                                    Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
+                                    break;
                                 case "Sudoku":
                                     Names.add(new Room(R.drawable.review_game3_rounded, dName[0], dName[1]));
                                     break;
-                                case "Tàu chiến":
-                                    Names.add(new Room(R.drawable.review_game2_rounded, dName[0], dName[1]));
+                                case "Cờ vua":
+                                    Names.add(new Room(R.drawable.review_game4_rounded, dName[0], dName[1]));
                                     break;
                                 case "N/A":
                                     Names.add(new Room(R.drawable.logo_normal, dName[0], dName[1]));
