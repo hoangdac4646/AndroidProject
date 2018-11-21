@@ -29,8 +29,8 @@ public class StartingMenu extends AppCompatActivity {
     Sound Sound;
     Button btn_create, btn_find, btn_setting;
     private BluetoothAdapter mBTAdapter;
-    private final int REQUEST_CODE_ENABLE = 101;
-    private final int REQUEST_CODE_DISCOVERABLE = 1001;
+    private final int REQUEST_CODE_ENABLE = 10133;
+    private final int REQUEST_CODE_DISCOVERABLE = 10012;
     public final static String mBTAdapterDefaultName = BluetoothAdapter.getDefaultAdapter().getName();
     public static BluetoothConnection mConnection = new BluetoothConnection();
     private Handler mHandler = new Handler();

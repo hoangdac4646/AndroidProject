@@ -61,7 +61,7 @@ public class CreatingRoom extends AppCompatActivity {
     TextView txt_p1Name, txt_p2Name;
 
     private BluetoothAdapter mBTAdapter;
-    private final int REQUEST_CODE_ENABLE = 101;
+    private final int REQUEST_CODE_ENABLE = 101256;
     public static Player enemyPlayer = new Player();
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -381,7 +381,6 @@ public class CreatingRoom extends AppCompatActivity {
         }
 
     }
-
     @Override
     protected void onStop() {
         super.onStop();

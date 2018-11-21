@@ -47,7 +47,7 @@ public class FindingRoom extends AppCompatActivity {
     private BluetoothDevice DeviceSelected = null;// phai gan gia tri cho DeviceSelected
     MediaPlayer mediaPlayer;
     private ListView DeviceList;
-    private final int REQUEST_CODE_ENABLE = 101;
+    private final int REQUEST_CODE_ENABLE = 101454;
     private ArrayList<BluetoothDevice> mDevices = new ArrayList<>();
     private ArrayList<Room> Names = new ArrayList();
     Message msg1;
@@ -198,10 +198,7 @@ public class FindingRoom extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
+
 
     @Override
     protected void onResume() {
@@ -263,8 +260,6 @@ public class FindingRoom extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            mDevices.clear();
-            Names.clear();
 
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
