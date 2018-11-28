@@ -23,6 +23,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.root.minigame.Activities.CreatingRoom;
 import com.example.root.minigame.Activities.StartingMenu;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
@@ -45,7 +46,7 @@ public class CaroActivity extends AppCompatActivity {
     HorizontalScrollView hsvBanCo;
     ScrollView svBanCo;
     TextView lblCountTime;
-    String NamePlayer1, NamePlayer2;
+    TextView lblNamePlayer1, lblNamePlayer2;
     int SoLuotPlayer1, SoLoutPlayer2;
     int SumTimePlayer1, SumTimePlayer2;
     int TimeDown, CountTime;
@@ -85,7 +86,10 @@ public class CaroActivity extends AppCompatActivity {
         lblSumLuotPlayer2 = findViewById(R.id.lblSumLuotPlayer2);
         lblSumTimePlayer1 = findViewById(R.id.lblSumTimePlayer1);
         lblSumTimePlayer2 = findViewById(R.id.lblSumTimePlayer2);
-
+        lblNamePlayer1 = findViewById(R.id.lblNamePlayer1);
+        lblNamePlayer2 = findViewById(R.id.lblNamePlayer2);
+        lblNamePlayer1.setText(Main.thisPlayer.getPlayerName());
+        lblNamePlayer2.setText(CreatingRoom.enemyPlayer.getPlayerName());
         if(Main.thisPlayer.isHost()){
             CheckDuocDanh = true;
             Index = 0;
@@ -94,8 +98,7 @@ public class CaroActivity extends AppCompatActivity {
             Index = 1;
         }
 
-        NamePlayer1 = "";
-        NamePlayer2 = "";
+
         SoLuotPlayer1 = 0;
         SoLoutPlayer2 = 0;
         SumTimePlayer1 = 0;
@@ -193,7 +196,6 @@ public class CaroActivity extends AppCompatActivity {
     void ThongBaoChienThang(String Title, String Message){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(Title);
-        alertDialog.setIcon(R.mipmap.icon_challenge);
         alertDialog.setMessage(Message);
         alertDialog.setPositiveButton("Chơi Lại", new DialogInterface.OnClickListener() {
             @Override

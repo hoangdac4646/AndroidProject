@@ -431,7 +431,6 @@ public class CreatingRoom extends AppCompatActivity {
 
         Main.thisPlayer.setHostStatus(false);
         enemyPlayer.setHostStatus(false);
-        super.onDestroy();
     }
 
     @Override
@@ -462,6 +461,7 @@ public class CreatingRoom extends AppCompatActivity {
         fl_btn_game4.setBackgroundResource(R.drawable.review_game4_room);
         btn_ready.setBackgroundResource(R.drawable.ready_press);
 
+
         if (Main.thisPlayer.isHost()) {
             if (iv_p1Ready.getVisibility() == View.VISIBLE) {
 
@@ -474,8 +474,8 @@ public class CreatingRoom extends AppCompatActivity {
 
         }
 
+        StartingMenu.mConnection.setHandle(mCreatingRoomHandler);
         StartingMenu.mConnection.sendMessage("UnReady");
-
     }
 
 
@@ -494,19 +494,6 @@ public class CreatingRoom extends AppCompatActivity {
             switch (msg.what) {
                 case Messages.MESSAGE_STATE_CHANGE:
                     if (msg.arg1 != BluetoothConnectionService.STATE_CONNECTED) {
-                        Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ. Đang tiến hành kết nối lại...", Toast.LENGTH_SHORT).show();
-                        if (!Main.thisPlayer.isHost()) {
-                            if (StartingMenu.mConnection != null && mBTAdapter.isEnabled() == true) {
-                                StartingMenu.mConnection.Reconnect();
-                                if (StartingMenu.mConnection.mBTconnection.getState() == BluetoothConnectionService.STATE_CONNECTED) {
-                                    Toast.makeText(getApplicationContext(), "Kết nối thành công!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Kết nối thất bại!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        } else {
-                            StartingMenu.mConnection.StartConnection(mCreatingRoomHandler);
-                        }
                         Toast.makeText(getApplication(), "Cre: Bạn Đã Mất Kết Nối Tới Phòng Chờ.", Toast.LENGTH_SHORT).show();
                     } else {
                         StartingMenu.mConnection.sendMessage("/&" + Main.thisPlayer.getPlayerName());

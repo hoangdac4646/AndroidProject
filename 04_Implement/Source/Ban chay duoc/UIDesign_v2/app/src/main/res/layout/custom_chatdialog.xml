@@ -26,7 +26,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/lv_noidungnhan"
-            android:layout_height="300dp">
+            android:layout_height="150dp">
         </ListView>
         <LinearLayout
             android:background="#ffea00"

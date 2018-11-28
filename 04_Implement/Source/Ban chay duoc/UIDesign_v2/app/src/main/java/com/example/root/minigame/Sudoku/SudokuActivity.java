@@ -339,7 +339,7 @@ public class SudokuActivity extends AppCompatActivity implements CellGroupFragme
                                 public void onClick(DialogInterface dialog, int which) {
 
                                     Main.click_button.PlayButtonSound();
-                                    Toast.makeText(SudokuActivity.this, "Choi moi ne haha", Toast.LENGTH_SHORT).show();
+                                   //Toast.makeText(SudokuActivity.this, "Choi moi ne haha", Toast.LENGTH_SHORT).show();
                                     RandomIndexFileAndFileID();
                                     onNewMap();
                                     StartingMenu.mConnection.sendMessage("-2"+FileID);
@@ -356,7 +356,7 @@ public class SudokuActivity extends AppCompatActivity implements CellGroupFragme
                             });
                             builder.create().show();
                         }else if(readMessage.indexOf("-2")!=-1){
-                            Toast.makeText(SudokuActivity.this, "Choi moi ne", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SudokuActivity.this, "Choi moi ne", Toast.LENGTH_SHORT).show();
                             StringBuilder stringBuilder1  =new StringBuilder();
                             for(int i=2;i<readMessage.length();i++){
                                 stringBuilder1.append(readMessage.charAt(i));
@@ -418,9 +418,9 @@ public class SudokuActivity extends AppCompatActivity implements CellGroupFragme
                     StartingMenu.mConnection.sendMessage("Finish");
                     DauHang.setFocusable(false);
                     countDownTimer.cancel();
-                    Toast.makeText(SudokuActivity.this, "You lose ! ", Toast.LENGTH_SHORT).show();
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(SudokuActivity.this);
-                    builder.setTitle("You lose !");
+                    builder.setTitle("You win !");
                     builder.setMessage("Bạn có muốn chơi lại không ? ");
                     builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
@@ -461,7 +461,7 @@ public class SudokuActivity extends AppCompatActivity implements CellGroupFragme
                 Main.click_button.PlayButtonSound();
                 onLayDapAn(v);
                 StartingMenu.mConnection.sendMessage("Giveup");
-                Toast.makeText(SudokuActivity.this, "You lose ! ", Toast.LENGTH_SHORT).show();
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(SudokuActivity.this);
                 builder.setTitle("You lose !");
                 builder.setMessage("Bạn có muốn chơi lại không ? Tự hủy sau 5s ! ");

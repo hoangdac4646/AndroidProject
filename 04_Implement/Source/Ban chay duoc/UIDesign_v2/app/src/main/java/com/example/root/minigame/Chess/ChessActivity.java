@@ -19,11 +19,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -31,6 +34,9 @@ import android.widget.Toast;
 
 import com.example.root.minigame.Activities.CreatingRoom;
 import com.example.root.minigame.Activities.StartingMenu;
+import com.example.root.minigame.Caro.CaroActivity;
+import com.example.root.minigame.Chat.Adapter_listview;
+import com.example.root.minigame.Chat.SendMessage;
 import com.example.root.minigame.Interface.Messages;
 import com.example.root.minigame.Main;
 import com.example.root.minigame.R;
@@ -38,6 +44,7 @@ import com.example.root.minigame.Sound.Click_button;
 import com.example.root.minigame.mBluetooth.BluetoothConnectionService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -78,6 +85,16 @@ public class ChessActivity extends AppCompatActivity {
     private int posCheckUs;
     private Cells King;
     private Click_button sound;
+
+    //chat
+    android.app.AlertDialog.Builder dialogBuilder;
+    android.app.AlertDialog alertDialog;
+    View dialogView;
+    Adapter_listview adapter_listview;
+    private List<SendMessage> SendMessages = new ArrayList<>();
+    ListView message;
+    EditText editText;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -120,6 +137,17 @@ public class ChessActivity extends AppCompatActivity {
         txt_p1Name  = findViewById(R.id.txt_p1Name_chess);
         txt_p2Name  = findViewById(R.id.txt_p2Name_chess);
         txt_time    = findViewById(R.id.txt_time);
+        //chat
+        dialogBuilder  = new android.app.AlertDialog.Builder(ChessActivity.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        dialogView = inflater.inflate(R.layout.custom_chatdialog, null);
+        message  =dialogView.findViewById(R.id.lv_noidungnhan);
+        adapter_listview = new Adapter_listview(ChessActivity.this,R.layout.custom_listview,SendMessages);
+        message.setAdapter(adapter_listview);
+        adapter_listview.notifyDataSetChanged();
+        dialogBuilder .setView(dialogView);
+        alertDialog = dialogBuilder.create();
+
         dialog = new Dialog(ChessActivity.this);
         txt_p1Name.setText(Main.thisPlayer.getPlayerName());
         linear_row = new LinearLayout(this);
@@ -175,7 +203,7 @@ public class ChessActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 Countdown--;
-                txt_time.setText(String.format("%02d : %02d", Countdown/60 , (Countdown % (60))));
+                txt_time.setText(String.format("00 : %02d", Countdown));
             }
             @Override
             public void onFinish() {
@@ -185,8 +213,9 @@ public class ChessActivity extends AppCompatActivity {
                     if(mBTadapter.isEnabled()){
                         StartingMenu.mConnection.sendMessage("timeout");
                         Toast.makeText(ChessActivity.this, "Hết thời gian", Toast.LENGTH_SHORT).show();
-                        yourTurn = false;
+
                     }
+                    yourTurn = false;
                 }
                 this.start();
 
@@ -198,7 +227,20 @@ public class ChessActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sound.PlayButtonSound();
-
+                Button Gui2 = dialogView.findViewById(R.id.btn_SendMessage);
+                editText = dialogView.findViewById(R.id.tv_noidungCaro);
+                Gui2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String D = "-8";
+                        D += editText.getText().toString();
+                        SendMessages.add(new SendMessage(editText.getText().toString(), "Me"));
+                        adapter_listview.notifyDataSetChanged();
+                        editText.setText("");
+                        StartingMenu.mConnection.sendMessage(D);
+                    }
+                });
+                alertDialog.show();
 
                 // chat
             }
@@ -646,13 +688,16 @@ public class ChessActivity extends AppCompatActivity {
                     }//castle
                     case BISHOP: {
                         for(int j = 1; j <= MAX_ROW ; j++) {
-                            int posforcheck = posOfChessPiece + j * compare_Row * MAX_ROW + compare_Col * j;
+                            int posforcheck = posOfChessPiece + j * compare_Row * MAX_ROW + 1 * compare_Col * j;
                             if (isMyTeamMate(posforcheck, mcell.getColor())) {
                                 return false;
                             }
-                            if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + compare_Col * j == num_COL) {
-                                for (int k = 1; k <= MAX_ROW; k++) {
-                                    if(posOfChessPiece + k * compare_Row * MAX_ROW + compare_Col * k == position){
+                            if(num_ROW_pieces + j*compare_Row == num_ROW && num_COL_pieces + 1*compare_Col * j == num_COL) {
+
+
+                                for (int k = 1; k <= (position - posOfChessPiece)*compare /(MAX_ROW - 1*compare_Row) && (position - posOfChessPiece) * compare % (MAX_ROW - 1*compare_Row) == 0; k++) {
+
+                                    if(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k == position){
                                         if (checkIsEnemy(posOfChessPiece, position)) {
                                             if (cellHasPiecesInt.indexOf(position) != -1) {
                                                 Eatable = true;
@@ -660,9 +705,10 @@ public class ChessActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
-                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Row * MAX_ROW + compare_Col * k) != -1) {
+                                    if (cellHasPiecesInt.indexOf(posOfChessPiece + k * compare_Row * MAX_ROW + 1 * compare_Col * k) != -1) {
                                         return false;
                                     }
+
                                 }
                                 Eatable = false;
                                 return true;
@@ -1008,32 +1054,6 @@ public class ChessActivity extends AppCompatActivity {
                 case Messages.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     String readMessage = new String(readBuf, 0, msg.arg1);
-<<<<<<< HEAD
-                        try {
-                            String[] mes = readMessage.split("&");
-                            int possition = Integer.parseInt(mes[0]);
-                            int oldpos = Integer.parseInt(mes[1]);
-                            NearlyStep(possition, txt_EnemyStep);
-                            if (checkIsMoveable(possition, oldpos)) {
-                                if (Eatable) {
-                                    EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)), CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
-                                    if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
-                                        sound.check_mate();
-                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
-                                        isCheckMate = true;
-                                        checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
-                                    }
-                                } else {
-                                        DrawPieces(possition, CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)));
-                                        cellHasPiecesInt.set(cellHasPiecesInt.indexOf(oldpos), possition);
-                                        DrawPieces(oldpos, null);
-                                    if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
-                                        sound.check_mate();
-                                        Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
-                                        isCheckMate = true;
-                                        checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
-                                    }
-=======
                     try {
                         String[] mes = readMessage.split("&");
                         int possition = Integer.parseInt(mes[0]);
@@ -1044,7 +1064,7 @@ public class ChessActivity extends AppCompatActivity {
                                 EatEnemy(CellHasPieces.get(cellHasPiecesInt.indexOf(oldpos)), CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                 if (checkIsMoveable(posOfKing, possition) && Eatable == true) {
                                     sound.check_mate();
-                                    Toast.makeText(ChessActivity.this, "Chiếu Tướng mình", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
                                     isCheckMate = true;
                                     checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
                                 }
@@ -1057,7 +1077,6 @@ public class ChessActivity extends AppCompatActivity {
                                     Toast.makeText(ChessActivity.this, "Chiếu Tướng", Toast.LENGTH_SHORT).show();
                                     isCheckMate = true;
                                     checkmate(CellHasPieces.get(cellHasPiecesInt.indexOf(possition)));
->>>>>>> master
                                 }
                             }
                         }
@@ -1076,6 +1095,7 @@ public class ChessActivity extends AppCompatActivity {
                             dialog.dismiss();
                         }
                         else if(readMessage.equals("timeout")){
+                            Countdown = 30;
                             yourTurn = true;
                         }
                         else if(readMessage.equals("restart")){
@@ -1084,7 +1104,14 @@ public class ChessActivity extends AppCompatActivity {
                         else if(readMessage.equals("quit")){
                             Toast.makeText(ChessActivity.this, CreatingRoom.enemyPlayer.getPlayerName() + " đã thoát game!", Toast.LENGTH_SHORT).show();
                         }
-
+                        else if(readMessage.indexOf("-8") != -1){
+                            StringBuilder stringBuilderRead = new StringBuilder();
+                            for(int i=2;i<readMessage.length();i++){
+                                stringBuilderRead.append(readMessage.charAt(i));
+                            }
+                            SendMessages.add(new SendMessage(stringBuilderRead.toString(),"Đối thủ"));
+                            adapter_listview.notifyDataSetChanged();
+                        }
                         //tin nhan day neeeeeeeeeeeeeeeeee ^^
                     }
                 case Messages.MESSAGE_DEVICE_NAME:

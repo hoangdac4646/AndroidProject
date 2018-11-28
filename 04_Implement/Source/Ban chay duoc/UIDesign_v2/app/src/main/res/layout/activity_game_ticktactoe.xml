@@ -94,7 +94,8 @@
                 android:text="Player 1"
                 android:textColor="#FFFFFF"
                 android:textSize="10dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:id="@+id/lblNamePlayer1"/>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -318,7 +319,8 @@
                 android:text="Player 2"
                 android:textColor="#FFFFFF"
                 android:textSize="10dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:id="@+id/lblNamePlayer2"/>
 
             <ImageView
                 android:layout_width="match_parent"
